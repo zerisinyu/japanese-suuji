@@ -3,29 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japanese Numbers & Counters Quiz</title>
+    <title>日语数字和量词练习</title>
     <style>
         body {
             font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Meiryo', 'メイリオ', 'Osaka', 'MS PGothic', 'ＭＳ Ｐゴシック', 'Arial', sans-serif;
             display: flex;
-            flex-direction: column; /* Allow toggle to be above quiz */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f4f1ea; /* Softer, traditional paper-like background */
+            background-color: #f4f1ea;
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            color: #333; /* Default text color */
+            color: #333;
         }
 
-        .language-toggle-container {
+        .top-controls {
+            display: flex;
+            gap: 15px; /* Space between toggle buttons */
             margin-bottom: 20px;
-            text-align: center;
+            align-items: center;
         }
 
-        #languageToggle {
-            background-color: #8b5e3c; /* Earthy brown */
+        .control-button { /* Common class for top control buttons */
+            background-color: #8b5e3c;
             color: #f4f1ea;
             border: none;
             padding: 10px 18px;
@@ -35,36 +37,47 @@
             transition: background-color 0.3s ease, transform 0.1s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        #languageToggle:hover {
+        .control-button:hover {
             background-color: #7a5230;
         }
-        #languageToggle:active {
+        .control-button:active {
             transform: translateY(1px);
         }
+        #playSoundButton {
+            background-color: #5a8b3c; /* A different color for play sound */
+            margin-top: 10px; /* Spacing from feedback */
+            padding: 10px 15px;
+            font-size: 1em;
+        }
+        #playSoundButton:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
 
         .quiz-container {
             background-color: #ffffff;
-            padding: 35px 40px; /* Increased padding */
-            border-radius: 12px; /* Softer radius */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Softer shadow */
+            padding: 35px 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 550px; /* Slightly wider */
+            max-width: 550px;
             text-align: center;
         }
 
         h1 {
-            color: #4a4a4a; /* Darker, softer gray */
+            color: #4a4a4a;
             margin-bottom: 30px;
-            font-size: 2em; /* Slightly larger */
+            font-size: 2em;
             font-weight: 600;
         }
 
         #questionArea {
             font-size: 2.8em;
-            color: #2c5282; /* Deep blue for questions */
+            color: #2c5282;
             margin-bottom: 30px;
             padding: 20px;
-            background-color: #e6f0f7; /* Lighter blueish background */
+            background-color: #e6f0f7;
             border-radius: 10px;
             min-height: 70px;
             display: flex;
@@ -75,9 +88,9 @@
 
         #answerInput {
             width: calc(100% - 24px);
-            padding: 15px; /* More padding */
+            padding: 15px;
             margin-bottom: 25px;
-            border: 1px solid #d1d5db; /* Lighter border */
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 1.2em;
             box-sizing: border-box;
@@ -87,17 +100,16 @@
             color: #9ca3af;
         }
 
-
         .buttons-group {
             display: flex;
             justify-content: center;
-            gap: 15px; /* Space between buttons */
+            gap: 15px;
         }
 
-        button.quiz-button { /* Specific class for quiz buttons */
+        button.quiz-button {
             color: white;
             border: none;
-            padding: 14px 22px; /* Larger padding */
+            padding: 14px 22px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1.1em;
@@ -112,21 +124,19 @@
             transform: translateY(1px);
         }
 
-
         #checkButton {
-            background-color: #38a169; /* Green for check */
+            background-color: #38a169;
         }
         #checkButton:hover {
             background-color: #2f855a;
         }
 
         #nextButton {
-            background-color: #3182ce; /* Blue for next */
+            background-color: #3182ce;
         }
         #nextButton:hover {
             background-color: #2b6cb0;
         }
-
 
         #feedbackArea {
             margin-top: 25px;
@@ -136,11 +146,11 @@
         }
 
         .correct {
-            color: #38a169; /* Consistent green */
+            color: #38a169;
         }
 
         .incorrect {
-            color: #e53e3e; /* Consistent red */
+            color: #e53e3e;
         }
 
         #scoreArea {
@@ -167,7 +177,7 @@
                 font-size: 1em;
                 padding: 12px 18px;
             }
-            #languageToggle {
+            .control-button, #playSoundButton {
                 font-size: 0.8em;
                 padding: 8px 15px;
             }
@@ -175,8 +185,9 @@
     </style>
 </head>
 <body>
-    <div class="language-toggle-container">
-        <button id="languageToggle">切换语言 (Switch Language)</button>
+    <div class="top-controls">
+        <button id="languageToggle" class="control-button">切换语言 (Switch Language)</button>
+        <button id="muteToggle" class="control-button">静音</button>
     </div>
 
     <div class="quiz-container">
@@ -188,6 +199,7 @@
             <button id="nextButton" class="quiz-button">下一个</button>
         </div>
         <div id="feedbackArea"></div>
+        <button id="playSoundButton" class="control-button" disabled>播放声音</button>
         <div id="scoreArea"><span id="uiScoreLabel">分数</span>: <span id="score">0</span></div>
     </div>
 
@@ -201,11 +213,14 @@
                 nextQuestion: '下一个',
                 scoreLabel: '分数',
                 placeholder: '请输入读音 (平假名)',
-                correctFeedback: '正确！ �',
+                correctFeedback: '正确！ 🎉',
                 incorrectFeedbackPrefix: '错误。正确答案是: ',
                 inputPrompt: '请输入答案！',
                 toggleButton: '切换至 English',
-                pageTitle: '日语数字和量词练习'
+                pageTitle: '日语数字和量词练习',
+                mute: '静音',
+                unmute: '取消静音',
+                playSound: '播放声音'
             },
             en: {
                 htmlLang: 'en',
@@ -218,12 +233,17 @@
                 incorrectFeedbackPrefix: 'Incorrect. The correct answer is: ',
                 inputPrompt: 'Please enter an answer!',
                 toggleButton: '切换至 中文',
-                pageTitle: 'Japanese Quiz'
+                pageTitle: 'Japanese Quiz',
+                mute: 'Mute',
+                unmute: 'Unmute',
+                playSound: 'Play Sound'
             }
         };
-        let currentLanguage = 'zh'; // Default language
+        let currentLanguage = 'zh';
+        let isMuted = false;
+        const synth = window.speechSynthesis; // Speech Synthesis API
 
-        // --- DOM Elements for UI Text ---
+        // --- DOM Elements for UI Text & Controls ---
         const htmlElement = document.documentElement;
         const pageTitleElement = document.querySelector('title');
         const uiTitleElement = document.getElementById('uiTitle');
@@ -232,9 +252,10 @@
         const nextButtonElement = document.getElementById('nextButton');
         const uiScoreLabelElement = document.getElementById('uiScoreLabel');
         const languageToggleButton = document.getElementById('languageToggle');
+        const muteToggleButton = document.getElementById('muteToggle');
+        const playSoundButton = document.getElementById('playSoundButton');
 
 
-        // --- Function to update UI text based on current language ---
         function updateUIText() {
             const strings = uiStrings[currentLanguage];
             htmlElement.lang = strings.htmlLang;
@@ -245,31 +266,58 @@
             nextButtonElement.textContent = strings.nextQuestion;
             uiScoreLabelElement.textContent = strings.scoreLabel;
             languageToggleButton.textContent = strings.toggleButton;
+            muteToggleButton.textContent = isMuted ? strings.unmute : strings.mute;
+            playSoundButton.textContent = strings.playSound;
         }
 
-        // --- Function to set initial language based on browser settings ---
         function setInitialLanguage() {
             const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
             if (browserLang.startsWith('en')) {
                 currentLanguage = 'en';
             } else {
-                currentLanguage = 'zh'; // Default to Chinese for other cases or specific zh variants
+                currentLanguage = 'zh';
             }
             updateUIText();
         }
 
-        // --- Language Toggle Event Listener ---
+        // --- Speech Synthesis Function ---
+        function speak(textToSpeak) {
+            if (isMuted || !textToSpeak || !synth) {
+                return;
+            }
+            if (synth.speaking) { // If already speaking, cancel previous and speak new
+                synth.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'ja-JP'; // Specify Japanese language
+            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.pitch = 1;
+
+            // Attempt to find a Japanese voice
+            const voices = synth.getVoices();
+            const japaneseVoice = voices.find(voice => voice.lang === 'ja-JP');
+            if (japaneseVoice) {
+                utterance.voice = japaneseVoice;
+            } else {
+                console.warn("No Japanese voice found, using default.");
+            }
+            synth.speak(utterance);
+        }
+        // Ensure voices are loaded (some browsers load them asynchronously)
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = () => {
+                // Voices loaded, could re-call speak if something was pending
+                // For this app, it's usually fine as speak is called on demand
+            };
+        }
+
+
         languageToggleButton.addEventListener('click', () => {
             currentLanguage = (currentLanguage === 'zh') ? 'en' : 'zh';
             updateUIText();
-            // If a question is loaded and feedback is shown, re-render feedback in new language
             if (feedbackArea.textContent && currentQuestionData) {
-                const userAnswer = answerInputElement.value.trim(); // Keep user's answer
-                // Simulate a check to re-display feedback in the new language
-                // This is a bit of a hack; a more robust solution would store feedback state separately
                 const isCurrentlyCorrect = feedbackArea.classList.contains('correct');
-                const tempAnswer = currentQuestionData.a; // Store correct answer
-
+                const tempAnswer = currentQuestionData.a;
                 if (isCurrentlyCorrect) {
                      feedbackArea.textContent = uiStrings[currentLanguage].correctFeedback;
                      if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
@@ -285,238 +333,89 @@
             }
         });
 
+        muteToggleButton.addEventListener('click', () => {
+            isMuted = !isMuted;
+            muteToggleButton.textContent = isMuted ? uiStrings[currentLanguage].unmute : uiStrings[currentLanguage].mute;
+            if (isMuted && synth.speaking) {
+                synth.cancel(); // Stop any current speech if muted
+            }
+        });
 
-        // --- 数据定义区 (Japanese content - no change needed for UI language) ---
-        const singleDigitReadings = {
-            '1': 'いち', '2': 'に', '3': 'さん', '4': 'よん', '5': 'ご', '6': 'ろく', '7': 'なな', '8': 'はち', '9': 'きゅう', '0': ''
-        };
-        const singleDigitKanji = {
-            '0': '零', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九'
-        };
+        playSoundButton.addEventListener('click', () => {
+            if (currentQuestionData && currentQuestionData.a) {
+                speak(currentQuestionData.a);
+            }
+        });
+
+
+        // --- Japanese Content Data (Unchanged) ---
+        const singleDigitReadings = { '1': 'いち', '2': 'に', '3': 'さん', '4': 'よん', '5': 'ご', '6': 'ろく', '7': 'なな', '8': 'はち', '9': 'きゅう', '0': '' };
+        const singleDigitKanji = { '0': '零', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九' };
 
         function numToJapaneseSimple(num_to_convert) {
             if (num_to_convert === 0) return { kanji: "", reading: "" };
-            if (num_to_convert > 9999 || num_to_convert < 0) {
-                 console.warn("numToJapaneseSimple called with number out of 0-9999 range:", num_to_convert);
-                 return {kanji: String(num_to_convert), reading: String(num_to_convert)};
-            }
-            let n = num_to_convert;
-            let k = "";
-            let r = "";
+            if (num_to_convert > 9999 || num_to_convert < 0) { return {kanji: String(num_to_convert), reading: String(num_to_convert)}; }
+            let n = num_to_convert; let k = ""; let r = "";
             if (n >= 1000) {
-                const thousands = Math.floor(n / 1000);
-                if (thousands === 1) { k += "千"; r += "せん"; }
-                else {
-                    k += (singleDigitKanji[String(thousands)] || String(thousands)) + "千";
-                    if (thousands === 3) r += "さんぜん";
-                    else if (thousands === 8) r += "はっせん";
-                    else r += (singleDigitReadings[String(thousands)] || String(thousands)) + "せん";
-                }
+                const th = Math.floor(n / 1000);
+                if (th === 1) { k += "千"; r += "せん"; }
+                else { k += (singleDigitKanji[String(th)] || String(th)) + "千";
+                    if (th === 3) r += "さんぜん"; else if (th === 8) r += "はっせん";
+                    else r += (singleDigitReadings[String(th)] || String(th)) + "せん"; }
                 n %= 1000;
             }
             if (n >= 100) {
-                const hundreds = Math.floor(n / 100);
-                if (hundreds === 1) { k += "百"; r += "ひゃく"; }
-                else {
-                    k += (singleDigitKanji[String(hundreds)] || String(hundreds)) + "百";
-                    if (hundreds === 3) r += "さんびゃく";
-                    else if (hundreds === 6) r += "ろっぴゃく";
-                    else if (hundreds === 8) r += "はっぴゃく";
-                    else r += (singleDigitReadings[String(hundreds)] || String(hundreds)) + "ひゃく";
-                }
+                const h = Math.floor(n / 100);
+                if (h === 1) { k += "百"; r += "ひゃく"; }
+                else { k += (singleDigitKanji[String(h)] || String(h)) + "百";
+                    if (h === 3) r += "さんびゃく"; else if (h === 6) r += "ろっぴゃく"; else if (h === 8) r += "はっぴゃく";
+                    else r += (singleDigitReadings[String(h)] || String(h)) + "ひゃく"; }
                 n %= 100;
             }
             if (n >= 10) {
-                const tens = Math.floor(n / 10);
-                if (tens === 1) { k += "十"; r += "じゅう"; }
-                else {
-                    k += (singleDigitKanji[String(tens)] || String(tens)) + "十";
-                    r += (singleDigitReadings[String(tens)] || String(tens)) + "じゅう";
-                }
+                const t = Math.floor(n / 10);
+                if (t === 1) { k += "十"; r += "じゅう"; }
+                else { k += (singleDigitKanji[String(t)] || String(t)) + "十";
+                       r += (singleDigitReadings[String(t)] || String(t)) + "じゅう"; }
                 n %= 10;
             }
-            if (n > 0) {
-                k += singleDigitKanji[String(n)] || String(n);
-                r += singleDigitReadings[String(n)] || String(n);
-            }
+            if (n > 0) { k += singleDigitKanji[String(n)] || String(n); r += singleDigitReadings[String(n)] || String(n); }
             return { kanji: k, reading: r };
         }
 
         function numToJapanese(num_orig) {
             if (num_orig === 0) return { kanji: "零", reading: "れい" };
-            if (num_orig > 99999999 || num_orig < 0) {
-                 console.warn("numToJapanese called with number out of reasonable range:", num_orig);
-                 return {kanji: String(num_orig) + " (转换超出范围)", reading: String(num_orig) + " (转换超出范围)"};
-            }
-            let num = num_orig;
-            let k = "";
-            let r = "";
+            if (num_orig > 99999999 || num_orig < 0) { return {kanji: String(num_orig) + "(转换超出范围)", reading: String(num_orig) + "(转换超出范围)"}; }
+            let num = num_orig; let k = ""; let r = "";
             if (num >= 10000) {
-                const manVal = Math.floor(num / 10000);
-                const manParts = numToJapaneseSimple(manVal);
-                k += manParts.kanji + "万";
-                r += manParts.reading + "まん";
-                num %= 10000;
-                if (num === 0) return { kanji: k, reading: r };
+                const manVal = Math.floor(num / 10000); const manParts = numToJapaneseSimple(manVal);
+                k += manParts.kanji + "万"; r += manParts.reading + "まん";
+                num %= 10000; if (num === 0) return { kanji: k, reading: r };
             }
-            if (num > 0 || k === "") {
-                const restParts = numToJapaneseSimple(num);
-                k += restParts.kanji;
-                r += restParts.reading;
-            }
-            if (k === "" && r === "" && num_orig > 0) {
-                 console.error("Failed to convert positive number:", num_orig);
-                 return {kanji: String(num_orig), reading: String(num_orig)};
-            }
+            if (num > 0 || k === "") { const restParts = numToJapaneseSimple(num); k += restParts.kanji; r += restParts.reading; }
+            if (k === "" && r === "" && num_orig > 0) { return {kanji: String(num_orig), reading: String(num_orig)}; }
             return { kanji: k, reading: r };
         }
 
         const quizData = [
-            { type: 'standalone_number', unit: '百', values: [
-                { num: 100, q: '百', a: 'ひゃく' }, { num: 200, q: '二百', a: 'にひゃく' },
-                { num: 300, q: '三百', a: 'さんびゃく' }, { num: 400, q: '四百', a: 'よんひゃく' },
-                { num: 500, q: '五百', a: 'ごひゃく' }, { num: 600, q: '六百', a: 'ろっぴゃく' },
-                { num: 700, q: '七百', a: 'ななひゃく' }, { num: 800, q: '八百', a: 'はっぴゃく' },
-                { num: 900, q: '九百', a: 'きゅうひゃく' }
-            ]},
-            { type: 'standalone_number', unit: '千', values: [
-                { num: 1000, q: '千', a: 'せん' }, { num: 2000, q: '二千', a: 'にせん' },
-                { num: 3000, q: '三千', a: 'さんぜん' }, { num: 4000, q: '四千', a: 'よんせん' },
-                { num: 5000, q: '五千', a: 'ごせん' }, { num: 6000, q: '六千', a: 'ろくせん' },
-                { num: 7000, q: '七千', a: 'ななせん' }, { num: 8000, q: '八千', a: 'はっせん' },
-                { num: 9000, q: '九千', a: 'きゅうせん' }
-            ]},
-            {
-                type: 'complex_number',
-                displayName: '复杂数字',
-                range: [101, 99999],
-                generator: function() { // Removed unused parameter
-                    let num;
-                    do {
-                        num = getRandomInt(this.range[0], this.range[1]);
-                    } while (
-                        (num < 1000 && num % 100 === 0) ||
-                        (num < 10000 && num % 1000 === 0)
-                    );
-                    const japaneseParts = numToJapanese(num);
-                    return {
-                        q: String(num),
-                        a: japaneseParts.reading,
-                        kanji_representation: japaneseParts.kanji
-                    };
-                }
-            },
-            { type: 'number_counter_list', counterKanji: '月', items: [
-                { num: 1, numKanji: '一', qSuffix: '月', a: 'いちがつ' }, { num: 2, numKanji: '二', qSuffix: '月', a: 'にがつ' },
-                { num: 3, numKanji: '三', qSuffix: '月', a: 'さんがつ' }, { num: 4, numKanji: '四', qSuffix: '月', a: 'しがつ' },
-                { num: 5, numKanji: '五', qSuffix: '月', a: 'ごがつ' }, { num: 6, numKanji: '六', qSuffix: '月', a: 'ろくがつ' },
-                { num: 7, numKanji: '七', qSuffix: '月', a: 'しちがつ' }, { num: 8, numKanji: '八', qSuffix: '月', a: 'はちがつ' },
-                { num: 9, numKanji: '九', qSuffix: '月', a: 'くがつ' }, { num: 10, numKanji: '十', qSuffix: '月', a: 'じゅうがつ' },
-                { num: 11, numKanji: '十一', qSuffix: '月', a: 'じゅういちがつ' }, { num: 12, numKanji: '十二', qSuffix: '月', a: 'じゅうにがつ' }
-            ]},
-            { type: 'number_counter_list', counterKanji: '日', items: [
-                { num: 1, numKanji: '一', qSuffix: '日', a: 'ついたち' }, { num: 2, numKanji: '二', qSuffix: '日', a: 'ふつか' },
-                { num: 3, numKanji: '三', qSuffix: '日', a: 'みっか' }, { num: 4, numKanji: '四', qSuffix: '日', a: 'よっか' },
-                { num: 5, numKanji: '五', qSuffix: '日', a: 'いつか' }, { num: 6, numKanji: '六', qSuffix: '日', a: 'むいか' },
-                { num: 7, numKanji: '七', qSuffix: '日', a: 'なのか' }, { num: 8, numKanji: '八', qSuffix: '日', a: 'ようか' },
-                { num: 9, numKanji: '九', qSuffix: '日', a: 'ここのか' }, { num: 10, numKanji: '十', qSuffix: '日', a: 'とおか' },
-                { num: 11, numKanji: '十一', qSuffix: '日', a: 'じゅういちにち'}, {num: 12, numKanji: '十二', qSuffix: '日', a: 'じゅうににち'},
-                { num: 13, numKanji: '十三', qSuffix: '日', a: 'じゅうさんにち'}, { num: 14, numKanji: '十四', qSuffix: '日', a: 'じゅうよっか' },
-                {num: 15, numKanji: '十五', qSuffix: '日', a: 'じゅうごにち'}, { num: 16, numKanji: '十六', qSuffix: '日', a: 'じゅうろくにち'},
-                {num: 17, numKanji: '十七', qSuffix: '日', a: 'じゅうしちにち'}, {num: 18, numKanji: '十八', qSuffix: '日', a: 'じゅうはちにち'},
-                {num: 19, numKanji: '十九', qSuffix: '日', a: 'じゅうくにち'}, { num: 20, numKanji: '二十', qSuffix: '日', a: 'はつか' },
-                { num: 21, numKanji: '二十一', qSuffix: '日', a: 'にじゅういちにち'}, { num: 24, numKanji: '二十四', qSuffix: '日', a: 'にじゅうよっか' }
-            ]},
-            { type: 'number_counter_generated', counterKanji: '時', range: [1, 12], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                let answerReading = '';
-                if (num === 4) answerReading = 'よじ';
-                else if (num === 7) answerReading = 'しちじ';
-                else if (num === 9) answerReading = 'くじ';
-                else answerReading = readingNumPart + 'じ';
-                return { q: kanjiNumPart + '時', a: answerReading };
-            }},
-            { type: 'number_counter_generated', counterKanji: '分', range: [1, 59], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                let answerReading = '';
-                const lastDigit = num % 10;
-
-                if (num === 1) answerReading = 'いっぷん';
-                else if (num === 3 || (num > 10 && lastDigit === 3)) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['3'].length) + 'さんぷん';
-                else if (num === 4 || (num > 10 && lastDigit === 4)) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['4'].length) + 'よんぷん';
-                else if (num === 6 || (num > 10 && lastDigit === 6)) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['6'].length) + 'ろっぷん';
-                else if (num === 8 || (num > 10 && lastDigit === 8)) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['8'].length) + 'はっぷん';
-                else if (num % 10 === 0) { // 10, 20, 30, 40, 50
-                    if (num === 10) answerReading = 'じゅっぷん';
-                    else answerReading = readingNumPart.slice(0, -3) + 'っぷん'; // e.g., にじゅう -> にじ + っぷん
-                }
-                // For combined numbers like 11分, 21分
-                else if (num > 10 && lastDigit === 1) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['1'].length) + 'いっぷん';
-                else answerReading = readingNumPart + 'ふん';
-
-                // Specific overrides for very common cases or tricky ones
-                if (num === 10) answerReading = 'じゅっぷん'; // or じっぷん
-                if (num === 20) answerReading = 'にじっぷん'; // or にじゅっぷん
-                if (num === 30) answerReading = 'さんじっぷん';
-                if (num === 40) answerReading = 'よんじっぷん';
-                if (num === 50) answerReading = 'ごじっぷん';
-
-                return { q: kanjiNumPart + '分', a: answerReading };
-            }},
-            { type: 'number_counter_generated', counterKanji: '回', range: [1, 20], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                let answerReading = '';
-                if (num === 1) answerReading = 'いっかい';
-                else if (num === 6) answerReading = 'ろっかい';
-                else if (num === 8) answerReading = 'はっかい';
-                else if (num === 10) answerReading = 'じっかい';
-                else if (num > 10 && num % 10 === 1) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['1'].length) + 'いっかい';
-                else if (num > 10 && num % 10 === 6) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['6'].length) + 'ろっかい';
-                else if (num > 10 && num % 10 === 8) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['8'].length) + 'はっかい';
-                else if (num > 10 && num % 10 === 0) answerReading = readingNumPart.slice(0,-3) + 'っかい';
-                else answerReading = readingNumPart + 'かい';
-                return { q: kanjiNumPart + '回', a: answerReading };
-            }},
-            { type: 'number_counter_generated', counterKanji: '冊', range: [1, 20], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                let answerReading = '';
-                if (num === 1) answerReading = 'いっさつ';
-                else if (num === 8) answerReading = 'はっさつ';
-                else if (num === 10) answerReading = 'じっさつ';
-                else if (num > 10 && num % 10 === 1) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['1'].length) + 'いっさつ';
-                else if (num > 10 && num % 10 === 8) answerReading = readingNumPart.slice(0, readingNumPart.length - singleDigitReadings['8'].length) + 'はっさつ';
-                else if (num > 10 && num % 10 === 0) answerReading = readingNumPart.slice(0,-3) + 'っさつ';
-                else answerReading = readingNumPart + 'さつ';
-                return { q: kanjiNumPart + '冊', a: answerReading };
-            }},
-            { type: 'number_counter_generated', counterKanji: '着', range: [1, 10], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                let answerReading = '';
-                if (num === 1) answerReading = 'いっちゃく';
-                else if (num === 8) answerReading = 'はっちゃく';
-                else if (num === 10) answerReading = 'じっちゃく';
-                else answerReading = readingNumPart + 'ちゃく';
-                return { q: kanjiNumPart + '着', a: answerReading };
-            }},
-            { type: 'number_counter_generated', counterKanji: '枚', range: [1, 20], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                return { q: kanjiNumPart + '枚', a: readingNumPart + 'まい' };
-            }},
-            { type: 'number_counter_generated', counterKanji: '人', range: [1, 10], generator: (num) => {
-                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
-                let answerReading = '';
-                if (num === 1) answerReading = 'ひとり';
-                else if (num === 2) answerReading = 'ふたり';
-                else if (num === 4) answerReading = 'よにん';
-                else answerReading = readingNumPart + 'にん';
-                return { q: kanjiNumPart + '人', a: answerReading };
-            }},
+            { type: 'standalone_number', unit: '百', values: [ { num: 100, q: '百', a: 'ひゃく' }, { num: 200, q: '二百', a: 'にひゃく' }, { num: 300, q: '三百', a: 'さんびゃく' }, { num: 400, q: '四百', a: 'よんひゃく' }, { num: 500, q: '五百', a: 'ごひゃく' }, { num: 600, q: '六百', a: 'ろっぴゃく' }, { num: 700, q: '七百', a: 'ななひゃく' }, { num: 800, q: '八百', a: 'はっぴゃく' }, { num: 900, q: '九百', a: 'きゅうひゃく' } ]},
+            { type: 'standalone_number', unit: '千', values: [ { num: 1000, q: '千', a: 'せん' }, { num: 2000, q: '二千', a: 'にせん' }, { num: 3000, q: '三千', a: 'さんぜん' }, { num: 4000, q: '四千', a: 'よんせん' }, { num: 5000, q: '五千', a: 'ごせん' }, { num: 6000, q: '六千', a: 'ろくせん' }, { num: 7000, q: '七千', a: 'ななせん' }, { num: 8000, q: '八千', a: 'はっせん' }, { num: 9000, q: '九千', a: 'きゅうせん' } ]},
+            { type: 'complex_number', displayName: '复杂数字', range: [101, 99999], generator: function() { let num; do { num = getRandomInt(this.range[0], this.range[1]); } while ( (num < 1000 && num % 100 === 0) || (num < 10000 && num % 1000 === 0) ); const jp = numToJapanese(num); return { q: String(num), a: jp.reading, kanji_representation: jp.kanji }; } },
+            { type: 'number_counter_list', counterKanji: '月', items: [ { num: 1, numKanji: '一', qSuffix: '月', a: 'いちがつ' }, { num: 2, numKanji: '二', qSuffix: '月', a: 'にがつ' }, { num: 3, numKanji: '三', qSuffix: '月', a: 'さんがつ' }, { num: 4, numKanji: '四', qSuffix: '月', a: 'しがつ' }, { num: 5, numKanji: '五', qSuffix: '月', a: 'ごがつ' }, { num: 6, numKanji: '六', qSuffix: '月', a: 'ろくがつ' }, { num: 7, numKanji: '七', qSuffix: '月', a: 'しちがつ' }, { num: 8, numKanji: '八', qSuffix: '月', a: 'はちがつ' }, { num: 9, numKanji: '九', qSuffix: '月', a: 'くがつ' }, { num: 10, numKanji: '十', qSuffix: '月', a: 'じゅうがつ' }, { num: 11, numKanji: '十一', qSuffix: '月', a: 'じゅういちがつ' }, { num: 12, numKanji: '十二', qSuffix: '月', a: 'じゅうにがつ' } ]},
+            { type: 'number_counter_list', counterKanji: '日', items: [ { num: 1, numKanji: '一', qSuffix: '日', a: 'ついたち' }, { num: 2, numKanji: '二', qSuffix: '日', a: 'ふつか' }, { num: 3, numKanji: '三', qSuffix: '日', a: 'みっか' }, { num: 4, numKanji: '四', qSuffix: '日', a: 'よっか' }, { num: 5, numKanji: '五', qSuffix: '日', a: 'いつか' }, { num: 6, numKanji: '六', qSuffix: '日', a: 'むいか' }, { num: 7, numKanji: '七', qSuffix: '日', a: 'なのか' }, { num: 8, numKanji: '八', qSuffix: '日', a: 'ようか' }, { num: 9, numKanji: '九', qSuffix: '日', a: 'ここのか' }, { num: 10, numKanji: '十', qSuffix: '日', a: 'とおか' }, { num: 11, numKanji: '十一', qSuffix: '日', a: 'じゅういちにち'}, {num: 12, numKanji: '十二', qSuffix: '日', a: 'じゅうににち'}, { num: 13, numKanji: '十三', qSuffix: '日', a: 'じゅうさんにち'}, { num: 14, numKanji: '十四', qSuffix: '日', a: 'じゅうよっか' }, {num: 15, numKanji: '十五', qSuffix: '日', a: 'じゅうごにち'}, { num: 16, numKanji: '十六', qSuffix: '日', a: 'じゅうろくにち'}, {num: 17, numKanji: '十七', qSuffix: '日', a: 'じゅうしちにち'}, {num: 18, numKanji: '十八', qSuffix: '日', a: 'じゅうはちにち'}, {num: 19, numKanji: '十九', qSuffix: '日', a: 'じゅうくにち'}, { num: 20, numKanji: '二十', qSuffix: '日', a: 'はつか' }, { num: 21, numKanji: '二十一', qSuffix: '日', a: 'にじゅういちにち'}, { num: 24, numKanji: '二十四', qSuffix: '日', a: 'にじゅうよっか' } ]},
+            { type: 'number_counter_generated', counterKanji: '時', range: [1, 12], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 4) a = 'よじ'; else if (num === 7) a = 'しちじ'; else if (num === 9) a = 'くじ'; else a = r + 'じ'; return { q: k + '時', a: a }; }},
+            { type: 'number_counter_generated', counterKanji: '分', range: [1, 59], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; const ld = num % 10; if (num === 1) a = 'いっぷん'; else if (num === 3 || (num > 10 && ld === 3)) a = r.slice(0, r.length - singleDigitReadings['3'].length) + 'さんぷん'; else if (num === 4 || (num > 10 && ld === 4)) a = r.slice(0, r.length - singleDigitReadings['4'].length) + 'よんぷん'; else if (num === 6 || (num > 10 && ld === 6)) a = r.slice(0, r.length - singleDigitReadings['6'].length) + 'ろっぷん'; else if (num === 8 || (num > 10 && ld === 8)) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっぷん'; else if (num % 10 === 0) { if (num === 10) a = 'じゅっぷん'; else a = r.slice(0, -3) + 'っぷん'; } else if (num > 10 && ld === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっぷん'; else a = r + 'ふん'; if (num === 10) a = 'じゅっぷん'; if (num === 20) a = 'にじっぷん'; if (num === 30) a = 'さんじっぷん'; if (num === 40) a = 'よんじっぷん'; if (num === 50) a = 'ごじっぷん'; return { q: k + '分', a: a }; }},
+            { type: 'number_counter_generated', counterKanji: '回', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっかい'; else if (num === 6) a = 'ろっかい'; else if (num === 8) a = 'はっかい'; else if (num === 10) a = 'じっかい'; else if (num > 10 && num % 10 === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっかい'; else if (num > 10 && num % 10 === 6) a = r.slice(0, r.length - singleDigitReadings['6'].length) + 'ろっかい'; else if (num > 10 && num % 10 === 8) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっかい'; else if (num > 10 && num % 10 === 0) a = r.slice(0,-3) + 'っかい'; else a = r + 'かい'; return { q: k + '回', a: a }; }},
+            { type: 'number_counter_generated', counterKanji: '冊', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっさつ'; else if (num === 8) a = 'はっさつ'; else if (num === 10) a = 'じっさつ'; else if (num > 10 && num % 10 === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっさつ'; else if (num > 10 && num % 10 === 8) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっさつ'; else if (num > 10 && num % 10 === 0) a = r.slice(0,-3) + 'っさつ'; else a = r + 'さつ'; return { q: k + '冊', a: a }; }},
+            { type: 'number_counter_generated', counterKanji: '着', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっちゃく'; else if (num === 8) a = 'はっちゃく'; else if (num === 10) a = 'じっちゃく'; else a = r + 'ちゃく'; return { q: k + '着', a: a }; }},
+            { type: 'number_counter_generated', counterKanji: '枚', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); return { q: k + '枚', a: r + 'まい' }; }},
+            { type: 'number_counter_generated', counterKanji: '人', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'ひとり'; else if (num === 2) a = 'ふたり'; else if (num === 4) a = 'よにん'; else a = r + 'にん'; return { q: k + '人', a: a }; }},
         ];
 
         const questionArea = document.getElementById('questionArea');
-        const answerInput = document.getElementById('answerInput'); // Renamed from answerInputElement for consistency
-        const checkButton = document.getElementById('checkButton'); // Renamed
-        const nextButton = document.getElementById('nextButton'); // Renamed
+        const answerInput = document.getElementById('answerInput');
+        const checkButton = document.getElementById('checkButton');
+        const nextButton = document.getElementById('nextButton');
         const feedbackArea = document.getElementById('feedbackArea');
         const scoreDisplay = document.getElementById('score');
 
@@ -524,44 +423,35 @@
         let score = 0;
 
         function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
+            min = Math.ceil(min); max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
         function generateQuestion() {
-            answerInput.value = '';
-            feedbackArea.textContent = '';
-            feedbackArea.className = '';
-            answerInput.disabled = false;
-            checkButton.disabled = false;
+            answerInput.value = ''; feedbackArea.textContent = ''; feedbackArea.className = '';
+            answerInput.disabled = false; checkButton.disabled = false;
+            playSoundButton.disabled = true; // Disable play sound until answer is checked
 
-            const categoryIndex = getRandomInt(0, quizData.length - 1);
-            const category = quizData[categoryIndex];
+            const catIdx = getRandomInt(0, quizData.length - 1); const cat = quizData[catIdx];
 
-            if (category.type === 'standalone_number' || category.type === 'number_counter_list') {
-                const itemsArray = category.values || category.items;
-                const itemIndex = getRandomInt(0, itemsArray.length - 1);
-                const item = itemsArray[itemIndex];
-                currentQuestionData = { q: item.q, a: item.a, type: category.type };
-                 if (category.type === 'number_counter_list') {
-                    currentQuestionData.q = item.numKanji + item.qSuffix;
-                }
-            } else if (category.type === 'number_counter_generated' || category.type === 'complex_number') {
-                const numForGenerator = (category.type === 'complex_number') ? null : getRandomInt(category.range[0], category.range[1]);
-                currentQuestionData = category.generator(numForGenerator); // Pass numForGenerator
-                currentQuestionData.type = category.type;
+            if (cat.type === 'standalone_number' || cat.type === 'number_counter_list') {
+                const items = cat.values || cat.items; const itemIdx = getRandomInt(0, items.length - 1);
+                currentQuestionData = { q: items[itemIdx].q, a: items[itemIdx].a, type: cat.type };
+                if (cat.type === 'number_counter_list') { currentQuestionData.q = items[itemIdx].numKanji + items[itemIdx].qSuffix; }
+            } else if (cat.type === 'number_counter_generated' || cat.type === 'complex_number') {
+                const numGen = (cat.type === 'complex_number') ? null : getRandomInt(cat.range[0], cat.range[1]);
+                currentQuestionData = cat.generator(numGen);
+                currentQuestionData.type = cat.type;
             }
             questionArea.textContent = currentQuestionData.q;
         }
 
         function checkAnswer() {
             const userAnswer = answerInput.value.trim().replace(/ゔ/g, 'う゛');
-            const strings = uiStrings[currentLanguage]; // Get strings for the current language
+            const strings = uiStrings[currentLanguage];
 
             if (!userAnswer) {
-                feedbackArea.textContent = strings.inputPrompt;
-                feedbackArea.className = 'incorrect';
+                feedbackArea.textContent = strings.inputPrompt; feedbackArea.className = 'incorrect';
                 return;
             }
 
@@ -570,37 +460,29 @@
                 if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
                     feedbackArea.textContent += ` (${currentQuestionData.kanji_representation})`;
                 }
-                feedbackArea.className = 'correct';
-                score++;
-                scoreDisplay.textContent = score;
+                feedbackArea.className = 'correct'; score++; scoreDisplay.textContent = score;
             } else {
                 let correctAnswerText = `${strings.incorrectFeedbackPrefix}${currentQuestionData.a}`;
                 if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
                     correctAnswerText += ` ( ${currentQuestionData.kanji_representation} )`;
                 }
-                feedbackArea.textContent = correctAnswerText;
-                feedbackArea.className = 'incorrect';
+                feedbackArea.textContent = correctAnswerText; feedbackArea.className = 'incorrect';
             }
-            answerInput.disabled = true;
-            checkButton.disabled = true;
+            answerInput.disabled = true; checkButton.disabled = true;
+            playSoundButton.disabled = false; // Enable play sound button
         }
 
         checkButton.addEventListener('click', checkAnswer);
         nextButton.addEventListener('click', generateQuestion);
         answerInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                if (!checkButton.disabled) {
-                     checkAnswer();
-                } else {
-                    generateQuestion();
-                }
+                if (!checkButton.disabled) { checkAnswer(); }
+                else { generateQuestion(); }
             }
         });
 
-        // --- Initial Load ---
-        setInitialLanguage(); // Set language based on browser settings first
-        generateQuestion(); // Then generate the first question
+        setInitialLanguage();
+        generateQuestion();
     </script>
 </body>
 </html>
-�
