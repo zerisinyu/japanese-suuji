@@ -5,230 +5,250 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Numbers & Counters Quiz</title>
     <style>
+        :root {
+            --primary-color: #4A90E2; /* A modern blue */
+            --secondary-color: #50E3C2; /* A vibrant teal/mint */
+            --background-color: #f7f9fc; /* Light, clean background */
+            --card-background-color: #ffffff;
+            --text-color: #333333;
+            --text-light-color: #555555;
+            --border-color: #e0e0e0;
+            --success-color: #4CAF50; /* Green for correct answers */
+            --error-color: #F44336;   /* Red for incorrect answers */
+            --button-text-color: #ffffff;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+        }
+
         body {
-            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Meiryo', 'メイリオ', 'Osaka', 'MS PGothic', 'ＭＳ Ｐゴシック', 'Arial', sans-serif;
+            font-family: var(--font-family);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f4f1ea;
+            background-color: var(--background-color);
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            color: #333;
+            color: var(--text-color);
         }
 
         .top-controls {
             display: flex;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            justify-content: center; /* Center items when wrapped */
-            gap: 10px; /* Space between toggle buttons and mode selector */
-            margin-bottom: 20px;
+            flex-wrap: wrap; /* This allows items to wrap to the next line */
+            justify-content: center; /* Centers items on the line, and centers wrapped lines */
+            gap: 12px;
+            margin-bottom: 25px;
             align-items: center;
         }
 
-        .control-button, .mode-selector select { /* Common class for top control buttons and select */
-            background-color: #8b5e3c;
-            color: #f4f1ea;
-            border: none;
+        .control-button, .mode-selector select {
+            background-color: var(--card-background-color);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
             padding: 10px 18px;
-            border-radius: 8px;
+            border-radius: 20px; /* More rounded buttons */
             cursor: pointer;
             font-size: 0.9em;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            height: 38px; /* Match button height */
-            -webkit-appearance: none; /* Remove default select styling for Safari/Chrome */
-            -moz-appearance: none;    /* Remove default select styling for Firefox */
-            appearance: none;         /* Remove default select styling */
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23f4f1ea%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            height: 40px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .mode-selector select {
+             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234A90E2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat;
-            background-position: right 10px center;
+            background-position: right 12px center;
             background-size: 10px;
-            padding-right: 30px; /* Make space for arrow */
-        }
-        .control-button:hover, .mode-selector select:hover {
-            background-color: #7a5230;
-        }
-        .control-button:active, .mode-selector select:active { /* :active might not be very visible on select */
-            transform: translateY(1px);
+            padding-right: 35px;
         }
 
-        .mode-selector { /* Container for the select dropdown */
+        .control-button:hover, .mode-selector select:hover {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2);
+        }
+         .control-button:hover.mode-selector select, .mode-selector select:hover { 
+            /* Ensure arrow color changes on select hover too */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        }
+        .control-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        #muteToggle.muted {
+            background-color: var(--secondary-color);
+            color: var(--button-text-color);
+            border-color: var(--secondary-color);
+        }
+         #listeningModeToggle.active {
+            background-color: var(--secondary-color);
+            color: var(--button-text-color);
+            border-color: var(--secondary-color);
+        }
+
+
+        .mode-selector {
             display: flex;
             align-items: center;
         }
-        /* Label was removed, so no style needed for it anymore */
-
 
         #playSoundButton {
-            background-color: #5a8b3c; /* A different color for play sound */
-            margin-top: 10px; /* Spacing from feedback */
-            padding: 10px 15px;
+            background-color: var(--secondary-color);
+            color: var(--button-text-color);
+            border: none;
+            margin-top: 15px;
+            padding: 12px 20px;
             font-size: 1em;
+            font-weight: 500;
+            border-radius: 20px;
         }
         #playSoundButton:disabled {
-            background-color: #cccccc;
+            background-color: #e0e0e0;
+            color: #9e9e9e;
             cursor: not-allowed;
+            box-shadow: none;
+        }
+         #playSoundButton:hover:not(:disabled) {
+            background-color: #45D1B5; /* Darker shade of secondary */
+            box-shadow: 0 4px 10px rgba(80, 227, 194, 0.2);
         }
 
 
         .quiz-container {
-            background-color: #ffffff;
-            padding: 35px 40px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            background-color: var(--card-background-color);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 550px;
+            max-width: 600px;
             text-align: center;
         }
 
         h1 {
-            color: #4a4a4a;
-            margin-bottom: 30px;
-            font-size: 2em;
+            color: var(--text-color);
+            margin-bottom: 35px;
+            font-size: 2.2em;
             font-weight: 600;
         }
 
         #questionArea {
-            font-size: 2.8em;
-            color: #2c5282;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #e6f0f7;
-            border-radius: 10px;
-            min-height: 70px;
+            font-size: 3em;
+            color: var(--primary-color);
+            margin-bottom: 35px;
+            padding: 25px;
+            background-color: #edf6ff; /* Lighter shade of primary for question bg */
+            border-radius: 12px;
+            min-height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
+            font-weight: 700;
+            line-height: 1.3;
         }
+        #questionArea.listening-prompt {
+            font-size: 1.6em;
+            color: var(--secondary-color);
+            background-color: #e6fffa; /* Lighter shade of secondary */
+        }
+
 
         #answerInput {
-            width: calc(100% - 24px);
-            padding: 15px;
-            margin-bottom: 25px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1.2em;
+            width: calc(100% - 30px);
+            padding: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1.25em;
             box-sizing: border-box;
-            color: #333;
+            color: var(--text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        #answerInput::placeholder {
-            color: #9ca3af;
+        #answerInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
         }
+        #answerInput::placeholder { color: #a0aec0; }
 
-        .buttons-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
+        .buttons-group { display: flex; justify-content: center; gap: 20px; }
 
         button.quiz-button {
-            color: white;
+            color: var(--button-text-color);
             border: none;
-            padding: 14px 22px;
-            border-radius: 8px;
+            padding: 15px 25px;
+            border-radius: 25px; /* Pill shape */
             cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 500;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 1.15em;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            min-width: 140px; /* Ensure buttons have a good width */
         }
         button.quiz-button:hover {
-            opacity: 0.9;
+             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+             transform: translateY(-2px);
         }
         button.quiz-button:active {
-            transform: translateY(1px);
+            transform: translateY(0px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        #checkButton {
-            background-color: #38a169;
-        }
-        #checkButton:hover {
-            background-color: #2f855a;
-        }
+        #checkButton { background-color: var(--success-color); }
+        #checkButton:hover { background-color: #45a049; }
+        #nextButton { background-color: var(--primary-color); }
+        #nextButton:hover { background-color: #3A7BC8; }
 
-        #nextButton {
-            background-color: #3182ce;
-        }
-        #nextButton:hover {
-            background-color: #2b6cb0;
-        }
+        #feedbackArea { margin-top: 30px; font-size: 1.2em; min-height: 40px; font-weight: 600; }
+        .correct { color: var(--success-color); }
+        .incorrect { color: var(--error-color); }
+        #scoreArea { margin-top: 35px; font-size: 1.3em; color: var(--text-light-color); font-weight: 500; }
 
-        #feedbackArea {
-            margin-top: 25px;
-            font-size: 1.15em;
-            min-height: 35px;
-            font-weight: 600;
-        }
-
-        .correct {
-            color: #38a169;
-        }
-
-        .incorrect {
-            color: #e53e3e;
-        }
-
-        #scoreArea {
-            margin-top: 30px;
-            font-size: 1.25em;
-            color: #555;
-            font-weight: 500;
-        }
-
-        /* 响应式设计 */
         @media (max-width: 600px) {
             .top-controls {
-                flex-direction: column; /* Stack controls vertically on small screens */
-                gap: 10px;
+                /* Removed flex-direction: column; to allow wrapping */
+                /* justify-content: center; and flex-wrap: wrap; are inherited */
+                gap: 10px; /* Adjusted gap for potentially tighter space */
+            }
+            .control-button, .mode-selector select { /* Ensure items can shrink if needed */
+                flex-shrink: 1;
             }
             .mode-selector {
-                width: 100%;
-                justify-content: center;
+                /* width: 100%; /* This might make it take full width if it's the only item on a line */
+                /* justify-content: center; /* Center select if mode-selector takes full width */
+                /* Consider if mode-selector should have a max-width or if select's max-width is enough */
             }
             .mode-selector select {
                 width: auto; /* Allow select to size based on content */
-                flex-grow: 1; /* Allow select to take available space if needed */
-                max-width: 200px; /* Prevent it from becoming too wide */
+                /* flex-grow: 1; /* Removed to prevent it from taking too much space on a wrapped line */
+                max-width: 220px; /* Prevent it from becoming too wide */
             }
-            .quiz-container {
-                padding: 25px 20px;
-            }
-            h1 {
-                font-size: 1.6em;
-            }
-            #questionArea {
-                font-size: 2.2em;
-                padding: 15px;
-                min-height: 60px;
-            }
-            #answerInput, button.quiz-button {
-                font-size: 1em;
-                padding: 12px 18px;
-            }
-            .control-button, #playSoundButton, .mode-selector select {
-                font-size: 0.85em; /* Slightly larger for better touch */
-                padding: 10px 15px;
-            }
-             .mode-selector select {
-                padding-right: 30px; /* Ensure arrow space is maintained */
-            }
+            .quiz-container { padding: 30px 20px; }
+            h1 { font-size: 1.8em; }
+            #questionArea { font-size: 2.5em; padding: 20px; min-height: 70px; }
+            #questionArea.listening-prompt { font-size: 1.4em; }
+            #answerInput, button.quiz-button { font-size: 1.05em; padding: 14px 20px; }
+            .control-button, #playSoundButton, .mode-selector select { font-size: 0.9em; padding: 10px 15px; height: 38px;}
+            .mode-selector select { padding-right: 30px; }
+            button.quiz-button { min-width: 120px; }
         }
     </style>
 </head>
 <body>
     <div class="top-controls">
-        <button id="languageToggle" class="control-button">切换语言 (Switch Language)</button>
+        <button id="languageToggle" class="control-button">切换语言</button>
         <button id="muteToggle" class="control-button">静音</button>
         <div class="mode-selector">
             <select id="quizModeSelect" class="control-button">
                 <option value="all" id="uiQuizModeAll">全部</option>
-                <option value="numbers" id="uiQuizModeNumbers" selected>仅数字</option> <option value="counters" id="uiQuizModeCounters">仅量词</option>
+                <option value="numbers" id="uiQuizModeNumbers" selected>仅数字</option>
+                <option value="counters" id="uiQuizModeCounters">仅量词</option>
             </select>
         </div>
+        <button id="listeningModeToggle" class="control-button">听写模式</button>
     </div>
 
     <div class="quiz-container">
@@ -245,55 +265,32 @@
     </div>
 
     <script>
-        // --- UI Text Strings for Localization ---
         const uiStrings = {
             zh: {
-                htmlLang: 'zh-CN',
-                title: '日语数字和量词练习',
-                checkAnswer: '检查答案',
-                nextQuestion: '下一个',
-                scoreLabel: '分数',
-                placeholder: '请输入读音 (平假名)',
-                correctFeedback: '正确！ 🎉',
-                incorrectFeedbackPrefix: '错误。正确答案是: ',
-                inputPrompt: '请输入答案！',
-                toggleButton: '切换至 English',
-                pageTitle: '日语数字和量词练习',
-                mute: '静音',
-                unmute: '取消静音',
-                playSound: '播放声音',
-                // quizModeLabel: '练习模式:', // Label text removed
-                quizModeAll: '全部',
-                quizModeNumbers: '仅数字',
-                quizModeCounters: '仅量词'
+                htmlLang: 'zh-CN', title: '日语数字和量词练习', checkAnswer: '检查答案', nextQuestion: '下一个',
+                scoreLabel: '分数', placeholderDefault: '请输入读音 (平假名)', placeholderListening: '请写入听到的内容',
+                correctFeedback: '正确！ 🎉', incorrectFeedbackPrefix: '错误。正确答案是: ', inputPrompt: '请输入答案！',
+                toggleButton: '切换至 English', pageTitle: '日语数字和量词练习', mute: '静音', unmute: '取消静音',
+                playSound: '播放声音', quizModeAll: '全部', quizModeNumbers: '仅数字',
+                quizModeCounters: '仅量词', listeningModeOn: '视觉模式', listeningModeOff: '听写模式',
+                listeningPrompt: '请听声音...'
             },
             en: {
-                htmlLang: 'en',
-                title: 'Japanese Numbers & Counters Quiz',
-                checkAnswer: 'Check Answer',
-                nextQuestion: 'Next',
-                scoreLabel: 'Score',
-                placeholder: 'Enter reading (Hiragana)',
-                correctFeedback: 'Correct! 🎉',
-                incorrectFeedbackPrefix: 'Incorrect. The correct answer is: ',
-                inputPrompt: 'Please enter an answer!',
-                toggleButton: '切换至 中文',
-                pageTitle: 'Japanese Quiz',
-                mute: 'Mute',
-                unmute: 'Unmute',
-                playSound: 'Play Sound',
-                // quizModeLabel: 'Practice Mode:', // Label text removed
-                quizModeAll: 'All',
-                quizModeNumbers: 'Numbers Only',
-                quizModeCounters: 'Counters Only'
+                htmlLang: 'en', title: 'Japanese Numbers & Counters Quiz', checkAnswer: 'Check Answer', nextQuestion: 'Next',
+                scoreLabel: 'Score', placeholderDefault: 'Enter reading (Hiragana)', placeholderListening: 'Write what you hear',
+                correctFeedback: 'Correct! 🎉', incorrectFeedbackPrefix: 'Incorrect. The correct answer is: ', inputPrompt: 'Please enter an answer!',
+                toggleButton: '切换至 中文', pageTitle: 'Japanese Quiz', mute: 'Mute', unmute: 'Unmute',
+                playSound: 'Play Sound', quizModeAll: 'All', quizModeNumbers: 'Numbers Only',
+                quizModeCounters: 'Counters Only', listeningModeOn: 'Visual Mode', listeningModeOff: 'Listening Mode',
+                listeningPrompt: 'Listen to the audio...'
             }
         };
         let currentLanguage = 'zh';
         let isMuted = false;
         const synth = window.speechSynthesis;
-        let currentQuizMode = 'numbers'; // Default to 'numbers'
+        let currentQuizMode = 'numbers';
+        let isListeningMode = false;
 
-        // --- DOM Elements ---
         const htmlElement = document.documentElement;
         const pageTitleElement = document.querySelector('title');
         const uiTitleElement = document.getElementById('uiTitle');
@@ -305,45 +302,50 @@
         const muteToggleButton = document.getElementById('muteToggle');
         const playSoundButton = document.getElementById('playSoundButton');
         const quizModeSelectElement = document.getElementById('quizModeSelect');
-        // const uiQuizModeLabelElement = document.getElementById('uiQuizModeLabel'); // Label element removed
         const uiQuizModeAllOption = document.getElementById('uiQuizModeAll');
         const uiQuizModeNumbersOption = document.getElementById('uiQuizModeNumbers');
         const uiQuizModeCountersOption = document.getElementById('uiQuizModeCounters');
-
+        const listeningModeToggleButton = document.getElementById('listeningModeToggle');
+        const questionArea = document.getElementById('questionArea');
 
         function updateUIText() {
             const strings = uiStrings[currentLanguage];
             htmlElement.lang = strings.htmlLang;
             pageTitleElement.textContent = strings.pageTitle;
             uiTitleElement.textContent = strings.title;
-            answerInputElement.placeholder = strings.placeholder;
+            answerInputElement.placeholder = isListeningMode ? strings.placeholderListening : strings.placeholderDefault;
             checkButtonElement.textContent = strings.checkAnswer;
             nextButtonElement.textContent = strings.nextQuestion;
             uiScoreLabelElement.textContent = strings.scoreLabel;
             languageToggleButton.textContent = strings.toggleButton;
             muteToggleButton.textContent = isMuted ? strings.unmute : strings.mute;
+            muteToggleButton.classList.toggle('muted', isMuted);
             playSoundButton.textContent = strings.playSound;
-            // uiQuizModeLabelElement.textContent = strings.quizModeLabel; // Label text removed
             uiQuizModeAllOption.textContent = strings.quizModeAll;
             uiQuizModeNumbersOption.textContent = strings.quizModeNumbers;
             uiQuizModeCountersOption.textContent = strings.quizModeCounters;
+            listeningModeToggleButton.textContent = isListeningMode ? strings.listeningModeOn : strings.listeningModeOff;
+            listeningModeToggleButton.classList.toggle('active', isListeningMode);
+
+
+            if (isListeningMode && questionArea.classList.contains('listening-prompt')) {
+                 questionArea.textContent = strings.listeningPrompt;
+            }
         }
 
         function initializeQuiz() {
             const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
             currentLanguage = browserLang.startsWith('en') ? 'en' : 'zh';
-            
-            // Set default quiz mode from JS, then update select element
-            currentQuizMode = 'numbers'; 
+            currentQuizMode = 'numbers';
             quizModeSelectElement.value = currentQuizMode;
-
-            updateUIText(); // Update all UI text elements
-            generateQuestion(); // Generate the first question
+            isListeningMode = false;
+            updateUIText();
+            generateQuestion();
         }
 
-
-        function speak(textToSpeak) {
-            if (isMuted || !textToSpeak || !synth) return;
+        function speak(textToSpeak, callback) {
+            if (!textToSpeak || !synth) { if(callback) callback(); return; }
+            if (isMuted) { if(callback) callback(); return; }
             if (synth.speaking) synth.cancel();
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'ja-JP';
@@ -353,11 +355,11 @@
             const japaneseVoice = voices.find(voice => voice.lang === 'ja-JP');
             if (japaneseVoice) utterance.voice = japaneseVoice;
             else console.warn("No Japanese voice found, using default.");
+            utterance.onend = () => { if(callback) callback(); };
+            utterance.onerror = (event) => { console.error('SpeechSynthesisUtterance.onerror', event); if(callback) callback(); };
             synth.speak(utterance);
         }
-        if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = () => {}; // Handler for voices loaded
-        }
+        if (synth.onvoiceschanged !== undefined) { synth.onvoiceschanged = () => {}; }
 
         languageToggleButton.addEventListener('click', () => {
             currentLanguage = (currentLanguage === 'zh') ? 'en' : 'zh';
@@ -383,7 +385,7 @@
 
         muteToggleButton.addEventListener('click', () => {
             isMuted = !isMuted;
-            updateUIText(); // Update button text
+            updateUIText();
             if (isMuted && synth.speaking) synth.cancel();
         });
 
@@ -393,7 +395,13 @@
 
         quizModeSelectElement.addEventListener('change', (event) => {
             currentQuizMode = event.target.value;
-            generateQuestion(); // Generate a new question based on the new mode
+            generateQuestion();
+        });
+
+        listeningModeToggleButton.addEventListener('click', () => {
+            isListeningMode = !isListeningMode;
+            updateUIText();
+            generateQuestion();
         });
 
         const singleDigitReadings = { '1': 'いち', '2': 'に', '3': 'さん', '4': 'よん', '5': 'ご', '6': 'ろく', '7': 'なな', '8': 'はち', '9': 'きゅう', '0': '' };
@@ -444,25 +452,21 @@
             return { kanji: k, reading: r };
         }
 
-        const allQuizData = [ // Renamed to allQuizData to avoid confusion
+        const allQuizData = [
             { type: 'standalone_number', unit: '百', values: [ { num: 100, q: '百', a: 'ひゃく' }, { num: 200, q: '二百', a: 'にひゃく' }, { num: 300, q: '三百', a: 'さんびゃく' }, { num: 400, q: '四百', a: 'よんひゃく' }, { num: 500, q: '五百', a: 'ごひゃく' }, { num: 600, q: '六百', a: 'ろっぴゃく' }, { num: 700, q: '七百', a: 'ななひゃく' }, { num: 800, q: '八百', a: 'はっぴゃく' }, { num: 900, q: '九百', a: 'きゅうひゃく' } ]},
             { type: 'standalone_number', unit: '千', values: [ { num: 1000, q: '千', a: 'せん' }, { num: 2000, q: '二千', a: 'にせん' }, { num: 3000, q: '三千', a: 'さんぜん' }, { num: 4000, q: '四千', a: 'よんせん' }, { num: 5000, q: '五千', a: 'ごせん' }, { num: 6000, q: '六千', a: 'ろくせん' }, { num: 7000, q: '七千', a: 'ななせん' }, { num: 8000, q: '八千', a: 'はっせん' }, { num: 9000, q: '九千', a: 'きゅうせん' } ]},
-            { type: 'complex_number', displayName: '复杂数字', range: [101, 99999], generator: function() { let num; do { num = getRandomInt(this.range[0], this.range[1]); } while ( (num < 1000 && num % 100 === 0) || (num < 10000 && num % 1000 === 0) ); const jp = numToJapanese(num); return { q: String(num), a: jp.reading, kanji_representation: jp.kanji }; } },
+            { type: 'complex_number', displayName: '复杂数字', range: [101, 99999], generator: function() { let num; do { num = getRandomInt(this.range[0], this.range[1]); } while ( (num < 1000 && num % 100 === 0) || (num < 10000 && num % 1000 === 0) ); const jp = numToJapanese(num); return { q: String(num), a: jp.reading, kanji_representation: jp.kanji, original_number: num }; } },
             { type: 'number_counter_list', counterKanji: '月', items: [ { num: 1, numKanji: '一', qSuffix: '月', a: 'いちがつ' }, { num: 2, numKanji: '二', qSuffix: '月', a: 'にがつ' }, { num: 3, numKanji: '三', qSuffix: '月', a: 'さんがつ' }, { num: 4, numKanji: '四', qSuffix: '月', a: 'しがつ' }, { num: 5, numKanji: '五', qSuffix: '月', a: 'ごがつ' }, { num: 6, numKanji: '六', qSuffix: '月', a: 'ろくがつ' }, { num: 7, numKanji: '七', qSuffix: '月', a: 'しちがつ' }, { num: 8, numKanji: '八', qSuffix: '月', a: 'はちがつ' }, { num: 9, numKanji: '九', qSuffix: '月', a: 'くがつ' }, { num: 10, numKanji: '十', qSuffix: '月', a: 'じゅうがつ' }, { num: 11, numKanji: '十一', qSuffix: '月', a: 'じゅういちがつ' }, { num: 12, numKanji: '十二', qSuffix: '月', a: 'じゅうにがつ' } ]},
             { type: 'number_counter_list', counterKanji: '日', items: [ { num: 1, numKanji: '一', qSuffix: '日', a: 'ついたち' }, { num: 2, numKanji: '二', qSuffix: '日', a: 'ふつか' }, { num: 3, numKanji: '三', qSuffix: '日', a: 'みっか' }, { num: 4, numKanji: '四', qSuffix: '日', a: 'よっか' }, { num: 5, numKanji: '五', qSuffix: '日', a: 'いつか' }, { num: 6, numKanji: '六', qSuffix: '日', a: 'むいか' }, { num: 7, numKanji: '七', qSuffix: '日', a: 'なのか' }, { num: 8, numKanji: '八', qSuffix: '日', a: 'ようか' }, { num: 9, numKanji: '九', qSuffix: '日', a: 'ここのか' }, { num: 10, numKanji: '十', qSuffix: '日', a: 'とおか' }, { num: 11, numKanji: '十一', qSuffix: '日', a: 'じゅういちにち'}, {num: 12, numKanji: '十二', qSuffix: '日', a: 'じゅうににち'}, { num: 13, numKanji: '十三', qSuffix: '日', a: 'じゅうさんにち'}, { num: 14, numKanji: '十四', qSuffix: '日', a: 'じゅうよっか' }, {num: 15, numKanji: '十五', qSuffix: '日', a: 'じゅうごにち'}, { num: 16, numKanji: '十六', qSuffix: '日', a: 'じゅうろくにち'}, {num: 17, numKanji: '十七', qSuffix: '日', a: 'じゅうしちにち'}, {num: 18, numKanji: '十八', qSuffix: '日', a: 'じゅうはちにち'}, {num: 19, numKanji: '十九', qSuffix: '日', a: 'じゅうくにち'}, { num: 20, numKanji: '二十', qSuffix: '日', a: 'はつか' }, { num: 21, numKanji: '二十一', qSuffix: '日', a: 'にじゅういちにち'}, { num: 24, numKanji: '二十四', qSuffix: '日', a: 'にじゅうよっか' } ]},
-            { type: 'number_counter_generated', counterKanji: '時', range: [1, 12], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 4) a = 'よじ'; else if (num === 7) a = 'しちじ'; else if (num === 9) a = 'くじ'; else a = r + 'じ'; return { q: k + '時', a: a }; }},
-            { type: 'number_counter_generated', counterKanji: '分', range: [1, 59], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; const ld = num % 10; if (num === 1) a = 'いっぷん'; else if (num === 3 || (num > 10 && ld === 3)) a = r.slice(0, r.length - singleDigitReadings['3'].length) + 'さんぷん'; else if (num === 4 || (num > 10 && ld === 4)) a = r.slice(0, r.length - singleDigitReadings['4'].length) + 'よんぷん'; else if (num === 6 || (num > 10 && ld === 6)) a = r.slice(0, r.length - singleDigitReadings['6'].length) + 'ろっぷん'; else if (num === 8 || (num > 10 && ld === 8)) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっぷん'; else if (num % 10 === 0) { if (num === 10) a = 'じゅっぷん'; else a = r.slice(0, -3) + 'っぷん'; } else if (num > 10 && ld === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっぷん'; else a = r + 'ふん'; if (num === 10) a = 'じゅっぷん'; if (num === 20) a = 'にじっぷん'; if (num === 30) a = 'さんじっぷん'; if (num === 40) a = 'よんじっぷん'; if (num === 50) a = 'ごじっぷん'; return { q: k + '分', a: a }; }},
-            { type: 'number_counter_generated', counterKanji: '回', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっかい'; else if (num === 6) a = 'ろっかい'; else if (num === 8) a = 'はっかい'; else if (num === 10) a = 'じっかい'; else if (num > 10 && num % 10 === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっかい'; else if (num > 10 && num % 10 === 6) a = r.slice(0, r.length - singleDigitReadings['6'].length) + 'ろっかい'; else if (num > 10 && num % 10 === 8) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっかい'; else if (num > 10 && num % 10 === 0) a = r.slice(0,-3) + 'っかい'; else a = r + 'かい'; return { q: k + '回', a: a }; }},
-            { type: 'number_counter_generated', counterKanji: '冊', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっさつ'; else if (num === 8) a = 'はっさつ'; else if (num === 10) a = 'じっさつ'; else if (num > 10 && num % 10 === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっさつ'; else if (num > 10 && num % 10 === 8) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっさつ'; else if (num > 10 && num % 10 === 0) a = r.slice(0,-3) + 'っさつ'; else a = r + 'さつ'; return { q: k + '冊', a: a }; }},
-            { type: 'number_counter_generated', counterKanji: '着', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっちゃく'; else if (num === 8) a = 'はっちゃく'; else if (num === 10) a = 'じっちゃく'; else a = r + 'ちゃく'; return { q: k + '着', a: a }; }},
-            { type: 'number_counter_generated', counterKanji: '枚', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); return { q: k + '枚', a: r + 'まい' }; }},
-            { type: 'number_counter_generated', counterKanji: '人', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'ひとり'; else if (num === 2) a = 'ふたり'; else if (num === 4) a = 'よにん'; else a = r + 'にん'; return { q: k + '人', a: a }; }},
+            { type: 'number_counter_generated', counterKanji: '時', range: [1, 12], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 4) a = 'よじ'; else if (num === 7) a = 'しちじ'; else if (num === 9) a = 'くじ'; else a = r + 'じ'; return { q: k + '時', a: a, original_number: num }; }},
+            { type: 'number_counter_generated', counterKanji: '分', range: [1, 59], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; const ld = num % 10; if (num === 1) a = 'いっぷん'; else if (num === 3 || (num > 10 && ld === 3)) a = r.slice(0, r.length - singleDigitReadings['3'].length) + 'さんぷん'; else if (num === 4 || (num > 10 && ld === 4)) a = r.slice(0, r.length - singleDigitReadings['4'].length) + 'よんぷん'; else if (num === 6 || (num > 10 && ld === 6)) a = r.slice(0, r.length - singleDigitReadings['6'].length) + 'ろっぷん'; else if (num === 8 || (num > 10 && ld === 8)) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっぷん'; else if (num % 10 === 0) { if (num === 10) a = 'じゅっぷん'; else a = r.slice(0, -3) + 'っぷん'; } else if (num > 10 && ld === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっぷん'; else a = r + 'ふん'; if (num === 10) a = 'じゅっぷん'; if (num === 20) a = 'にじっぷん'; if (num === 30) a = 'さんじっぷん'; if (num === 40) a = 'よんじっぷん'; if (num === 50) a = 'ごじっぷん'; return { q: k + '分', a: a, original_number: num }; }},
+            { type: 'number_counter_generated', counterKanji: '回', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっかい'; else if (num === 6) a = 'ろっかい'; else if (num === 8) a = 'はっかい'; else if (num === 10) a = 'じっかい'; else if (num > 10 && num % 10 === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっかい'; else if (num > 10 && num % 10 === 6) a = r.slice(0, r.length - singleDigitReadings['6'].length) + 'ろっかい'; else if (num > 10 && num % 10 === 8) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっかい'; else if (num > 10 && num % 10 === 0) a = r.slice(0,-3) + 'っかい'; else a = r + 'かい'; return { q: k + '回', a: a, original_number: num }; }},
+            { type: 'number_counter_generated', counterKanji: '冊', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっさつ'; else if (num === 8) a = 'はっさつ'; else if (num === 10) a = 'じっさつ'; else if (num > 10 && num % 10 === 1) a = r.slice(0, r.length - singleDigitReadings['1'].length) + 'いっさつ'; else if (num > 10 && num % 10 === 8) a = r.slice(0, r.length - singleDigitReadings['8'].length) + 'はっさつ'; else if (num > 10 && num % 10 === 0) a = r.slice(0,-3) + 'っさつ'; else a = r + 'さつ'; return { q: k + '冊', a: a, original_number: num }; }},
+            { type: 'number_counter_generated', counterKanji: '着', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっちゃく'; else if (num === 8) a = 'はっちゃく'; else if (num === 10) a = 'じっちゃく'; else a = r + 'ちゃく'; return { q: k + '着', a: a, original_number: num }; }},
+            { type: 'number_counter_generated', counterKanji: '枚', range: [1, 20], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); return { q: k + '枚', a: r + 'まい', original_number: num }; }},
+            { type: 'number_counter_generated', counterKanji: '人', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'ひとり'; else if (num === 2) a = 'ふたり'; else if (num === 4) a = 'よにん'; else a = r + 'にん'; return { q: k + '人', a: a, original_number: num }; }},
         ];
 
-        const questionArea = document.getElementById('questionArea');
-        const answerInput = document.getElementById('answerInput');
-        const checkButton = document.getElementById('checkButton');
-        const nextButton = document.getElementById('nextButton');
         const feedbackArea = document.getElementById('feedbackArea');
         const scoreDisplay = document.getElementById('score');
 
@@ -475,8 +479,9 @@
         }
 
         function generateQuestion() {
-            answerInput.value = ''; feedbackArea.textContent = ''; feedbackArea.className = '';
-            answerInput.disabled = false; checkButton.disabled = false;
+            answerInputElement.value = ''; feedbackArea.textContent = ''; feedbackArea.className = '';
+            answerInputElement.disabled = true;
+            checkButtonElement.disabled = true;
             playSoundButton.disabled = true;
 
             let filteredData = allQuizData;
@@ -486,37 +491,57 @@
                 filteredData = allQuizData.filter(item => item.type === 'number_counter_list' || item.type === 'number_counter_generated');
             }
 
-            if (filteredData.length === 0) { 
+            if (filteredData.length === 0) {
                 console.warn("No data available for current quiz mode:", currentQuizMode, "Falling back to all data.");
                 filteredData = allQuizData;
-                 // Optionally, inform the user or switch mode back to 'all'
-                if (allQuizData.length > 0) { // Ensure allQuizData is not empty itself
-                    currentQuizMode = 'all'; // Revert mode if filtered is empty
-                    quizModeSelectElement.value = 'all'; // Update dropdown
-                    updateUIText(); // Update any text related to mode if necessary
+                if (allQuizData.length > 0) {
+                    currentQuizMode = 'all';
+                    quizModeSelectElement.value = 'all';
                 } else {
-                    questionArea.textContent = "No questions available."; // Or localized string
-                    return; // No data to generate a question from
+                    questionArea.textContent = currentLanguage === 'zh' ? "没有可用的问题。" : "No questions available.";
+                    return;
                 }
             }
-
+            updateUIText();
 
             const catIdx = getRandomInt(0, filteredData.length - 1); const cat = filteredData[catIdx];
 
             if (cat.type === 'standalone_number' || cat.type === 'number_counter_list') {
                 const items = cat.values || cat.items; const itemIdx = getRandomInt(0, items.length - 1);
-                currentQuestionData = { q: items[itemIdx].q, a: items[itemIdx].a, type: cat.type };
-                if (cat.type === 'number_counter_list') { currentQuestionData.q = items[itemIdx].numKanji + items[itemIdx].qSuffix; }
+                currentQuestionData = { ...items[itemIdx], type: cat.type };
+                 if (cat.type === 'number_counter_list') {
+                    currentQuestionData.q = items[itemIdx].numKanji + items[itemIdx].qSuffix;
+                }
+                if (cat.type === 'standalone_number') {
+                    currentQuestionData.original_number = items[itemIdx].num;
+                }
+
             } else if (cat.type === 'number_counter_generated' || cat.type === 'complex_number') {
                 const numGen = (cat.type === 'complex_number') ? null : getRandomInt(cat.range[0], cat.range[1]);
                 currentQuestionData = cat.generator(numGen);
                 currentQuestionData.type = cat.type;
             }
-            questionArea.textContent = currentQuestionData.q;
+
+            if (isListeningMode) {
+                questionArea.textContent = uiStrings[currentLanguage].listeningPrompt;
+                questionArea.classList.add('listening-prompt');
+                speak(currentQuestionData.a, () => {
+                    answerInputElement.disabled = false;
+                    checkButtonElement.disabled = false;
+                    playSoundButton.disabled = false;
+                    if (!isMuted) answerInputElement.focus();
+                });
+            } else {
+                questionArea.textContent = currentQuestionData.q;
+                questionArea.classList.remove('listening-prompt');
+                answerInputElement.disabled = false;
+                checkButtonElement.disabled = false;
+                playSoundButton.disabled = true;
+            }
         }
 
         function checkAnswer() {
-            const userAnswer = answerInput.value.trim().replace(/ゔ/g, 'う゛');
+            const userAnswer = answerInputElement.value.trim().replace(/ゔ/g, 'う゛');
             const strings = uiStrings[currentLanguage];
 
             if (!userAnswer) {
@@ -524,34 +549,66 @@
                 return;
             }
 
-            if (userAnswer === currentQuestionData.a) {
+            let isCorrect = false;
+            if (isListeningMode) {
+                if (currentQuestionData.type === 'standalone_number' || currentQuestionData.type === 'complex_number') {
+                    const arabicAnswer = currentQuestionData.original_number ? String(currentQuestionData.original_number) : currentQuestionData.q;
+                    isCorrect = userAnswer === arabicAnswer || userAnswer === currentQuestionData.kanji_representation;
+                } else {
+                    isCorrect = userAnswer === currentQuestionData.q;
+                }
+            } else {
+                isCorrect = userAnswer === currentQuestionData.a;
+            }
+
+            if (isCorrect) {
                 feedbackArea.textContent = strings.correctFeedback;
                 if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
-                    feedbackArea.textContent += ` (${currentQuestionData.kanji_representation})`;
+                    feedbackArea.textContent += ` (${currentQuestionData.kanji_representation} / ${currentQuestionData.a})`;
+                } else if (isListeningMode && (currentQuestionData.type === 'standalone_number' || currentQuestionData.type === 'complex_number')) {
+                     feedbackArea.textContent += ` (${currentQuestionData.kanji_representation || currentQuestionData.q} / ${currentQuestionData.a})`;
+                } else if (isListeningMode && (currentQuestionData.type === 'number_counter_list' || currentQuestionData.type === 'number_counter_generated')) {
+                     feedbackArea.textContent += ` (${currentQuestionData.q} / ${currentQuestionData.a})`;
+                } else {
+                    if (currentQuestionData.kanji_representation && currentQuestionData.kanji_representation !== currentQuestionData.q) {
+                         feedbackArea.textContent += ` (${currentQuestionData.kanji_representation})`;
+                    }
                 }
                 feedbackArea.className = 'correct'; score++; scoreDisplay.textContent = score;
             } else {
-                let correctAnswerText = `${strings.incorrectFeedbackPrefix}${currentQuestionData.a}`;
-                if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
-                    correctAnswerText += ` ( ${currentQuestionData.kanji_representation} )`;
+                let correctAnswerDisplay = currentQuestionData.a;
+                if (isListeningMode) {
+                    if (currentQuestionData.type === 'standalone_number' || currentQuestionData.type === 'complex_number') {
+                        correctAnswerDisplay = `${currentQuestionData.kanji_representation || currentQuestionData.q} (${currentQuestionData.a})`;
+                    } else {
+                        correctAnswerDisplay = `${currentQuestionData.q} (${currentQuestionData.a})`;
+                    }
+                } else {
+                     correctAnswerDisplay = currentQuestionData.a;
+                     if (currentQuestionData.kanji_representation && currentQuestionData.kanji_representation !== currentQuestionData.q) {
+                         correctAnswerDisplay += ` (${currentQuestionData.kanji_representation})`;
+                     } else if (!currentQuestionData.kanji_representation && currentQuestionData.type === 'complex_number'){
+                         correctAnswerDisplay += ` (${currentQuestionData.q})`;
+                     }
                 }
-                feedbackArea.textContent = correctAnswerText; feedbackArea.className = 'incorrect';
+                feedbackArea.textContent = `${strings.incorrectFeedbackPrefix}${correctAnswerDisplay}`;
+                feedbackArea.className = 'incorrect';
             }
-            answerInput.disabled = true; checkButton.disabled = true;
+            answerInputElement.disabled = true; checkButtonElement.disabled = true;
             playSoundButton.disabled = false;
         }
 
-        checkButton.addEventListener('click', checkAnswer);
-        nextButton.addEventListener('click', generateQuestion);
-        answerInput.addEventListener('keypress', function(event) {
+        checkButtonElement.addEventListener('click', checkAnswer);
+        nextButtonElement.addEventListener('click', generateQuestion);
+        answerInputElement.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                if (!checkButton.disabled) { checkAnswer(); }
+                if (!checkButtonElement.disabled) { checkAnswer(); }
                 else { generateQuestion(); }
             }
         });
 
-        // --- Initial Load ---
-        initializeQuiz(); // Consolidate initialization
+        initializeQuiz();
     </script>
 </body>
 </html>
+
