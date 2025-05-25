@@ -130,185 +130,142 @@
 
     <script>
         // --- 数据定义区 ---
-        const standardNumberReadings = {
+        const singleDigitReadings = { // 更改变量名以示区分
             '1': 'いち', '2': 'に', '3': 'さん', '4': 'よん', '5': 'ご', '6': 'ろく', '7': 'なな', '8': 'はち', '9': 'きゅう', '0': ''
         };
-        const numberToKanji = { // 主要用于个位数
-            '0': '零', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九',
-            '10': '十', // '10' 及以上主要用于量词组合中的数字部分显示，复杂数字转换有专门逻辑
-            '11':'十一', '12':'十二', '13':'十三', '14':'十四', '15':'十五', '16':'十六', '17':'十七', '18':'十八', '19':'十九', '20':'二十'
-
+        const singleDigitKanji = { // 更改变量名
+            '0': '零', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九'
         };
 
-        // --- 复杂数字转换函数 ---
         /**
-         * 将数字转换为日语的简单形式（用于构成更大数字的前缀，如 二十三万 中的 二十三）
-         * @param {number} n_simple - 要转换的数字 (通常 < 10000)
+         * Converts a number (0-9999) to its Japanese Kanji and Hiragana reading.
+         * This function is for components of larger numbers or standalone numbers up to 9999.
+         * It correctly omits "一" before 十, 百, 千 when appropriate (e.g., 19 -> 十九, 100 -> 百).
+         * @param {number} num_to_convert - The number to convert (0-9999).
          * @returns {{kanji: string, reading: string}}
          */
-        function numToJapaneseSimple(n_simple) {
-            if (n_simple === 0) return { kanji: "", reading: "" };
-            let k_simple = "";
-            let r_simple = "";
-
-            // 千の位 (处理类似 123万 中的 123)
-            if (n_simple >= 1000) {
-                const sen_s = Math.floor(n_simple / 1000);
-                if (sen_s === 1 && (k_simple === "" && n_simple < 2000) ) { // 1000-1999, e.g. 千 for 1000
-                    k_simple += "千";
-                } else {
-                    k_simple += (numberToKanji[String(sen_s)] || String(sen_s)) + "千";
-                }
-
-                if (sen_s === 3) r_simple += "さんぜん";
-                else if (sen_s === 8) r_simple += "はっせん";
-                else if (sen_s === 1) r_simple += "せん";
-                else r_simple += (standardNumberReadings[String(sen_s)] || String(sen_s)) + "せん";
-                n_simple %= 1000;
+        function numToJapaneseSimple(num_to_convert) {
+            if (num_to_convert === 0) return { kanji: "", reading: "" }; // For composition, 0 is empty
+            if (num_to_convert > 9999 || num_to_convert < 0) {
+                 console.warn("numToJapaneseSimple called with number out of 0-9999 range:", num_to_convert);
+                 return {kanji: String(num_to_convert), reading: String(num_to_convert)}; // Fallback
             }
-            // 百の位
-            if (n_simple >= 100) {
-                const hyaku_s = Math.floor(n_simple / 100);
-                 if (hyaku_s === 1 && (k_simple === "" || k_simple.endsWith("千")) && n_simple < 200 && (n_simple+1000*(Math.floor(arguments[0]/1000))) < 20000 ) { // 100-199, e.g. 百 for 100, 千百 for 1100
-                    k_simple += "百";
-                } else {
-                    k_simple += (numberToKanji[String(hyaku_s)] || String(hyaku_s)) + "百";
-                }
 
-                if (hyaku_s === 1) r_simple += "ひゃく";
-                else if (hyaku_s === 3) r_simple += "さんびゃく";
-                else if (hyaku_s === 6) r_simple += "ろっぴゃく";
-                else if (hyaku_s === 8) r_simple += "はっぴゃく";
-                else r_simple += (standardNumberReadings[String(hyaku_s)] || String(hyaku_s)) + "ひゃく";
-                n_simple %= 100;
-            }
-            // 十の位
-            if (n_simple >= 10) {
-                const juu_s = Math.floor(n_simple / 10);
-                if (juu_s === 1) { // 修改条件判断
-                    k_simple += "十";
-                } else {
-                    k_simple += (numberToKanji[String(juu_s)] || String(juu_s)) + "十";
-                }
-                if (juu_s === 1) r_simple += "じゅう";
-                else r_simple += (standardNumberReadings[String(juu_s)] || String(juu_s)) + "じゅう";
-                n_simple %= 10;
-            }
-            // 一の位
-            if (n_simple > 0) {
-                k_simple += numberToKanji[String(n_simple)] || String(n_simple);
-                r_simple += standardNumberReadings[String(n_simple)] || String(n_simple);
-            }
-            return { kanji: k_simple, reading: r_simple };
-        }
-
-        /**
-         * 将数字转换为完整的日语汉字和读音
-         * @param {number} num - 要转换的数字
-         * @returns {{kanji: string, reading: string}}
-         */
-        function numToJapanese(num) {
-            if (num === 0) return { kanji: "零", reading: "れい" }; // Or ゼロ
-            if (num > 99999999) return {kanji: "太大无法转换", reading: "太大无法转换"}; // 简单上限
-
+            let n = num_to_convert;
             let k = "";
             let r = "";
 
-            // 億の位 (可选，如果需要更大数字)
+            // 千の位 (Thousands place)
+            if (n >= 1000) {
+                const thousands = Math.floor(n / 1000);
+                if (thousands === 1) {
+                    k += "千";
+                    r += "せん";
+                } else {
+                    k += (singleDigitKanji[String(thousands)] || String(thousands)) + "千";
+                    if (thousands === 3) r += "さんぜん";
+                    else if (thousands === 8) r += "はっせん";
+                    else r += (singleDigitReadings[String(thousands)] || String(thousands)) + "せん";
+                }
+                n %= 1000;
+            }
+
+            // 百の位 (Hundreds place)
+            if (n >= 100) {
+                const hundreds = Math.floor(n / 100);
+                if (hundreds === 1) {
+                    k += "百";
+                    r += "ひゃく";
+                } else {
+                    k += (singleDigitKanji[String(hundreds)] || String(hundreds)) + "百";
+                    if (hundreds === 3) r += "さんびゃく";
+                    else if (hundreds === 6) r += "ろっぴゃく";
+                    else if (hundreds === 8) r += "はっぴゃく";
+                    else r += (singleDigitReadings[String(hundreds)] || String(hundreds)) + "ひゃく";
+                }
+                n %= 100;
+            }
+
+            // 十の位 (Tens place)
+            if (n >= 10) {
+                const tens = Math.floor(n / 10);
+                if (tens === 1) {
+                    k += "十";
+                    r += "じゅう";
+                } else {
+                    k += (singleDigitKanji[String(tens)] || String(tens)) + "十";
+                    r += (singleDigitReadings[String(tens)] || String(tens)) + "じゅう";
+                }
+                n %= 10;
+            }
+
+            // 一の位 (Ones place)
+            if (n > 0) {
+                k += singleDigitKanji[String(n)] || String(n);
+                r += singleDigitReadings[String(n)] || String(n);
+            }
+            return { kanji: k, reading: r };
+        }
+
+        /**
+         * Converts a larger number to its full Japanese Kanji and Hiragana reading.
+         * Uses numToJapaneseSimple for segments.
+         * @param {number} num_orig - The original number to convert.
+         * @returns {{kanji: string, reading: string}}
+         */
+        function numToJapanese(num_orig) {
+            if (num_orig === 0) return { kanji: "零", reading: "れい" }; // Or ゼロ
+            // Limit for this quiz, can be expanded
+            if (num_orig > 99999999 || num_orig < 0) {
+                 console.warn("numToJapanese called with number out of reasonable range:", num_orig);
+                 return {kanji: String(num_orig) + " (转换超出范围)", reading: String(num_orig) + " (转换超出范围)"};
+            }
+
+            let num = num_orig;
+            let k = "";
+            let r = "";
+
+            // 億 (oku - 100,000,000s) - Optional, can be added if needed
             // if (num >= 100000000) {
-            //     const oku = Math.floor(num / 100000000);
-            //     const okuParts = numToJapaneseSimple(oku);
+            //     const okuVal = Math.floor(num / 100000000);
+            //     const okuParts = numToJapaneseSimple(okuVal); // Handles numbers like "三" for 三億
             //     k += okuParts.kanji + "億";
             //     r += okuParts.reading + "おく";
             //     num %= 100000000;
             //     if (num === 0) return { kanji: k, reading: r };
             // }
 
-
-            // 万の位
+            // 万 (man - 10,000s)
             if (num >= 10000) {
                 const manVal = Math.floor(num / 10000);
-                const manParts = numToJapaneseSimple(manVal); // 处理如 "二十三"万 中的 "二十三"
+                const manParts = numToJapaneseSimple(manVal); // e.g., for 123万, manVal is 123
                 k += manParts.kanji + "万";
                 r += manParts.reading + "まん";
                 num %= 10000;
-                if (num === 0) return { kanji: k, reading: r }; // 如：一万、二十三万
+                if (num === 0) return { kanji: k, reading: r };
             }
 
-            // 千の位
-            if (num >= 1000) {
-                const senVal = Math.floor(num / 1000);
-                // Kanji: "千" for 1000, "一千" is not standard unless for emphasis or specific contexts.
-                // "二千", "三千" etc.
-                // If k is not empty (e.g., "一万"), then "一万千" (11000) is correct.
-                if (senVal === 1 && !(k.length > 0 && k.endsWith("万"))) { // 1000-1999, standalone
-                    k += "千";
-                } else if (senVal > 0) { // Handles senVal=1 if k already has "万" (e.g. 一万千)
-                    k += (numberToKanji[String(senVal)] || String(senVal)) + "千";
-                }
-
-
-                if (senVal > 0) { // Only add reading if senVal is not zero
-                    if (senVal === 3) r += "さんぜん";
-                    else if (senVal === 8) r += "はっせん";
-                    // Note: 1000 is せん. いっせん is typically with counters.
-                    // 11000 (いちまんせん), 21000 (にまんせん)
-                    else if (senVal === 1) r += "せん";
-                    else r += (standardNumberReadings[String(senVal)] || String(senVal)) + "せん";
-                }
-                num %= 1000;
-                if (num === 0 && k.length > 0) return { kanji: k, reading: r };
+            // Remainder part (0-9999)
+            if (num > 0 || k === "") { // If k is empty, means original number was < 10000
+                const restParts = numToJapaneseSimple(num);
+                k += restParts.kanji;
+                r += restParts.reading;
+            }
+            
+            // If k and r are still empty, it means num_orig was 0 but not caught by the first check (shouldn't happen)
+            // or numToJapaneseSimple returned empty for a positive num (also shouldn't happen).
+            if (k === "" && r === "" && num_orig > 0) {
+                 // This is a fallback, numToJapaneseSimple should handle 1-9999
+                 console.error("Failed to convert positive number:", num_orig);
+                 return {kanji: String(num_orig), reading: String(num_orig)};
             }
 
-            // 百の位
-            if (num >= 100) {
-                const hyakuVal = Math.floor(num / 100);
-                if (hyakuVal === 1 && !(k.length > 0 && (k.endsWith("万") || k.endsWith("千")))) { // 100-199, standalone or after non-万/千
-                     k += "百";
-                } else if (hyakuVal > 0) {
-                     k += (numberToKanji[String(hyakuVal)] || String(hyakuVal)) + "百";
-                }
-
-
-                if (hyakuVal > 0) {
-                    if (hyakuVal === 1) r += "ひゃく"; // 100 is ひゃく, not いちひゃく
-                    else if (hyakuVal === 3) r += "さんびゃく";
-                    else if (hyakuVal === 6) r += "ろっぴゃく";
-                    else if (hyakuVal === 8) r += "はっぴゃく";
-                    else r += (standardNumberReadings[String(hyakuVal)] || String(hyakuVal)) + "ひゃく";
-                }
-                num %= 100;
-                if (num === 0 && k.length > 0) return { kanji: k, reading: r };
-            }
-
-            // 十の位
-            if (num >= 10) {
-                const juuVal = Math.floor(num / 10);
-                 if (juuVal === 1 && !(k.length > 0 && (k.endsWith("万") || k.endsWith("千") || k.endsWith("百")))) {
-                     k += "十";
-                 } else if (juuVal > 0) {
-                     k += (numberToKanji[String(juuVal)] || String(juuVal)) + "十";
-                 }
-
-                if (juuVal > 0) {
-                    if (juuVal === 1) r += "じゅう"; // 10 is じゅう, not いちじゅう
-                    else r += (standardNumberReadings[String(juuVal)] || String(juuVal)) + "じゅう";
-                }
-                num %= 10;
-                if (num === 0 && k.length > 0) return { kanji: k, reading: r };
-            }
-
-            // 一の位
-            if (num > 0) {
-                k += numberToKanji[String(num)] || String(num);
-                r += standardNumberReadings[String(num)] || String(num);
-            }
             return { kanji: k, reading: r };
         }
 
 
         const quizData = [
-            // --- 百位 ---
+            // --- 百位 (Standalone Hundreds) ---
             { type: 'standalone_number', unit: '百', values: [
                 { num: 100, q: '百', a: 'ひゃく' }, { num: 200, q: '二百', a: 'にひゃく' },
                 { num: 300, q: '三百', a: 'さんびゃく' }, { num: 400, q: '四百', a: 'よんひゃく' },
@@ -316,30 +273,38 @@
                 { num: 700, q: '七百', a: 'ななひゃく' }, { num: 800, q: '八百', a: 'はっぴゃく' },
                 { num: 900, q: '九百', a: 'きゅうひゃく' }
             ]},
-            // --- 千位 ---
+            // --- 千位 (Standalone Thousands) ---
             { type: 'standalone_number', unit: '千', values: [
                 { num: 1000, q: '千', a: 'せん' }, { num: 2000, q: '二千', a: 'にせん' },
-                { num: 3000, q: '三千', a: 'さんぜん' }, { num: 4000, q: '四千', a: 'よんせん' },
+                { num: 3000, q: '三千', a: 'さんぜん' }, { num: 4000, q: '四千', a: 'よんせん' }, // Note: よんせん is common
                 { num: 5000, q: '五千', a: 'ごせん' }, { num: 6000, q: '六千', a: 'ろくせん' },
                 { num: 7000, q: '七千', a: 'ななせん' }, { num: 8000, q: '八千', a: 'はっせん' },
                 { num: 9000, q: '九千', a: 'きゅうせん' }
             ]},
-            // --- 复杂数字 ---
+            // --- 复杂数字 (Complex Numbers) ---
             {
                 type: 'complex_number',
                 displayName: '复杂数字',
-                range: [101, 99999], // 例如 101 到 99999
-                generator: function(num) {
+                range: [101, 99999], // Generate numbers in this range
+                generator: function(num_to_generate_for_q) { // Parameter name changed for clarity
+                    // Filter out simple hundreds/thousands
+                    let num;
+                    do {
+                        num = getRandomInt(this.range[0], this.range[1]);
+                    } while (
+                        (num < 1000 && num % 100 === 0) || // e.g., 100, 200, ..., 900
+                        (num < 10000 && num % 1000 === 0)  // e.g., 1000, 2000, ..., 9000
+                    );
                     const japaneseParts = numToJapanese(num);
                     return {
-                        q: String(num), // 问题是阿拉伯数字
-                        a: japaneseParts.reading, // 答案是读音
-                        kanji_representation: japaneseParts.kanji // 用于反馈中显示汉字
+                        q: String(num), // Question is the Arabic numeral
+                        a: japaneseParts.reading, // Answer is the Hiragana reading
+                        kanji_representation: japaneseParts.kanji // For feedback
                     };
                 }
             },
-            // --- 月 (がつ) ---
-            { type: 'number_counter', counterKanji: '月', items: [
+            // --- 月 (がつ - months) ---
+            { type: 'number_counter_list', counterKanji: '月', items: [ // Changed type for clarity
                 { num: 1, numKanji: '一', qSuffix: '月', a: 'いちがつ' }, { num: 2, numKanji: '二', qSuffix: '月', a: 'にがつ' },
                 { num: 3, numKanji: '三', qSuffix: '月', a: 'さんがつ' }, { num: 4, numKanji: '四', qSuffix: '月', a: 'しがつ' },
                 { num: 5, numKanji: '五', qSuffix: '月', a: 'ごがつ' }, { num: 6, numKanji: '六', qSuffix: '月', a: 'ろくがつ' },
@@ -347,157 +312,118 @@
                 { num: 9, numKanji: '九', qSuffix: '月', a: 'くがつ' }, { num: 10, numKanji: '十', qSuffix: '月', a: 'じゅうがつ' },
                 { num: 11, numKanji: '十一', qSuffix: '月', a: 'じゅういちがつ' }, { num: 12, numKanji: '十二', qSuffix: '月', a: 'じゅうにがつ' }
             ]},
-            // --- 日 (にち/か) ---
-            { type: 'number_counter', counterKanji: '日', items: [
+            // --- 日 (にち/か - days of the month) ---
+            { type: 'number_counter_list', counterKanji: '日', items: [
                 { num: 1, numKanji: '一', qSuffix: '日', a: 'ついたち' }, { num: 2, numKanji: '二', qSuffix: '日', a: 'ふつか' },
                 { num: 3, numKanji: '三', qSuffix: '日', a: 'みっか' }, { num: 4, numKanji: '四', qSuffix: '日', a: 'よっか' },
                 { num: 5, numKanji: '五', qSuffix: '日', a: 'いつか' }, { num: 6, numKanji: '六', qSuffix: '日', a: 'むいか' },
                 { num: 7, numKanji: '七', qSuffix: '日', a: 'なのか' }, { num: 8, numKanji: '八', qSuffix: '日', a: 'ようか' },
                 { num: 9, numKanji: '九', qSuffix: '日', a: 'ここのか' }, { num: 10, numKanji: '十', qSuffix: '日', a: 'とおか' },
-                { num: 14, numKanji: '十四', qSuffix: '日', a: 'じゅうよっか' }, { num: 20, numKanji: '二十', qSuffix: '日', a: 'はつか' },
-                { num: 24, numKanji: '二十四', qSuffix: '日', a: 'にじゅうよっか' },
                 { num: 11, numKanji: '十一', qSuffix: '日', a: 'じゅういちにち'}, {num: 12, numKanji: '十二', qSuffix: '日', a: 'じゅうににち'},
-                { num: 13, numKanji: '十三', qSuffix: '日', a: 'じゅうさんにち'}, {num: 15, numKanji: '十五', qSuffix: '日', a: 'じゅうごにち'},
-                { num: 16, numKanji: '十六', qSuffix: '日', a: 'じゅうろくにち'}, {num: 17, numKanji: '十七', qSuffix: '日', a: 'じゅうしちにち'},
-                { num: 18, numKanji: '十八', qSuffix: '日', a: 'じゅうはちにち'}, {num: 19, numKanji: '十九', qSuffix: '日', a: 'じゅうくにち'},
-                { num: 21, numKanji: '二十一', qSuffix: '日', a: 'にじゅういちにち'}
+                { num: 13, numKanji: '十三', qSuffix: '日', a: 'じゅうさんにち'}, { num: 14, numKanji: '十四', qSuffix: '日', a: 'じゅうよっか' },
+                {num: 15, numKanji: '十五', qSuffix: '日', a: 'じゅうごにち'}, { num: 16, numKanji: '十六', qSuffix: '日', a: 'じゅうろくにち'},
+                {num: 17, numKanji: '十七', qSuffix: '日', a: 'じゅうしちにち'}, {num: 18, numKanji: '十八', qSuffix: '日', a: 'じゅうはちにち'},
+                {num: 19, numKanji: '十九', qSuffix: '日', a: 'じゅうくにち'}, { num: 20, numKanji: '二十', qSuffix: '日', a: 'はつか' },
+                { num: 21, numKanji: '二十一', qSuffix: '日', a: 'にじゅういちにち'}, { num: 24, numKanji: '二十四', qSuffix: '日', a: 'にじゅうよっか' }
             ]},
-            // --- 時 (じ) ---
+            // --- 時 (じ - o'clock) ---
             { type: 'number_counter_generated', counterKanji: '時', range: [1, 12], generator: (num) => {
-                const numStr = String(num);
-                let reading = '';
-                if (num === 4) reading = 'よじ';
-                else if (num === 7) reading = 'しちじ'; // ななじ is also common
-                else if (num === 9) reading = 'くじ';
-                else reading = (standardNumberReadings[numStr] || numStr) + 'じ';
-                return { q: (numberToKanji[numStr] || numStr) + '時', a: reading };
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                let answerReading = '';
+                if (num === 4) answerReading = 'よじ';
+                else if (num === 7) answerReading = 'しちじ'; // ななじ is also common
+                else if (num === 9) answerReading = 'くじ';
+                else answerReading = readingNumPart + 'じ';
+                return { q: kanjiNumPart + '時', a: answerReading };
             }},
-            // --- 分 (ふん/ぷん) ---
+            // --- 分 (ふん/ぷん - minutes) ---
             { type: 'number_counter_generated', counterKanji: '分', range: [1, 59], generator: (num) => {
-                let reading = '';
-                const numStr = String(num); // For Kanji display
-                let displayNumKanji = "";
-                if (num <= 20 && numberToKanji[numStr]) {
-                    displayNumKanji = numberToKanji[numStr];
-                } else if (num < 10) {
-                    displayNumKanji = numberToKanji[numStr];
-                } else { // For numbers > 20 or not in direct map, construct Kanji
-                    const tens = Math.floor(num / 10);
-                    const ones = num % 10;
-                    if (tens > 0) displayNumKanji += (numberToKanji[String(tens)] || String(tens)) + "十";
-                    if (ones > 0) displayNumKanji += numberToKanji[String(ones)] || String(ones);
-                }
-
-
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                let answerReading = '';
                 const lastDigit = num % 10;
-                let prefixReading = "";
-                if (num >= 10) {
-                    const tensDigit = Math.floor(num / 10);
-                    if (tensDigit === 1) prefixReading = "じゅう";
-                    else prefixReading = standardNumberReadings[String(tensDigit)] + "じゅう";
+
+                if (num === 1 || (num > 10 && lastDigit === 1 && num !== 11 && num !== 21 && num !== 31 && num !== 41 && num !== 51) || num === 11 || num === 21 || num === 31 || num === 41 || num === 51) { // e.g. 一分,十分後の一分 (じゅういっぷん is not standard for 11分)
+                     if (num === 1) answerReading = 'いっぷん';
+                     else answerReading = readingNumPart.slice(0, -2) + 'いっぷん'; // e.g. じゅう + いっぷん for 11分
+                } else if (num === 3 || (num > 10 && lastDigit === 3)) answerReading = readingNumPart.slice(0, -2) + 'さんぷん'; // じゅうさんぷん
+                else if (num === 4 || (num > 10 && lastDigit === 4)) answerReading = readingNumPart.slice(0, -2) + 'よんぷん'; // じゅうよんぷん
+                else if (num === 6 || (num > 10 && lastDigit === 6)) answerReading = readingNumPart.slice(0, -3) + 'ろっぷん'; // じゅうろっぷん (ろく ends in く)
+                else if (num === 8 || (num > 10 && lastDigit === 8)) answerReading = readingNumPart.slice(0, -2) + 'はっぷん'; // じゅうはっぷん (はち ends in ち)
+                else if (num % 10 === 0) { // 10, 20, 30, 40, 50
+                    if (num === 10) answerReading = 'じゅっぷん'; // or じっぷん
+                    else answerReading = readingNumPart.slice(0, -3) + 'っぷん'; // e.g. にじゅっぷん (remove じゅう, add っぷん)
                 }
+                else answerReading = readingNumPart + 'ふん'; // Default for 2, 5, 7, 9 endings
 
+                // Refinements for specific cases if general logic is not perfect
+                if (num === 1) answerReading = 'いっぷん';
+                else if (num === 10) answerReading = 'じゅっぷん'; // Common: じっぷん
+                else if (num === 20) answerReading = 'にじっぷん'; // Common: にじゅっぷん
+                else if (num === 30) answerReading = 'さんじっぷん'; // Common: さんじゅっぷん
+                else if (num === 40) answerReading = 'よんじっぷん'; // Common: よんじゅっぷん
+                else if (num === 50) answerReading = 'ごじっぷん'; // Common: ごじゅっぷん
+                // For combined numbers like 21分 (にじゅういっぷん)
+                else if (num > 10 && lastDigit === 1) answerReading = readingNumPart.slice(0, readingNumPart.length - (singleDigitReadings[String(lastDigit)].length)) + 'いっぷん';
+                else if (num > 10 && lastDigit === 3) answerReading = readingNumPart.slice(0, readingNumPart.length - (singleDigitReadings[String(lastDigit)].length)) + 'さんぷん';
+                else if (num > 10 && lastDigit === 4) answerReading = readingNumPart.slice(0, readingNumPart.length - (singleDigitReadings[String(lastDigit)].length)) + 'よんぷん';
+                // etc. for other endings if needed, though the general rule might cover them.
 
-                if (num === 1 || (num > 10 && lastDigit === 1)) reading = (num === 1 ? "" : prefixReading) + 'いっぷん';
-                else if (num === 3 || (num > 10 && lastDigit === 3)) reading = (num === 3 ? "" : prefixReading) + 'さんぷん';
-                else if (num === 4 || (num > 10 && lastDigit === 4)) reading = (num === 4 ? "" : prefixReading) + 'よんぷん';
-                else if (num === 6 || (num > 10 && lastDigit === 6)) reading = (num === 6 ? "" : prefixReading) + 'ろっぷん';
-                else if (num === 8 || (num > 10 && lastDigit === 8)) reading = (num === 8 ? "" : prefixReading) + 'はっぷん';
-                else if (num % 10 === 0) reading = prefixReading + 'ぷん'; // 10分 (じゅっぷん), 20分 (にじゅっぷん)
-                else { // 2, 5, 7, 9 ending minutes
-                    if (num < 10) reading = standardNumberReadings[String(lastDigit)] + 'ふん';
-                    else reading = prefixReading + standardNumberReadings[String(lastDigit)] + 'ふん';
-                }
-                 // Specific overrides for common cases like 10, 20 etc.
-                if (num === 10) reading = 'じゅっぷん'; // Common alternative: じっぷん
-                if (num === 20) reading = 'にじゅっぷん';
-                if (num === 30) reading = 'さんじゅっぷん';
-                if (num === 40) reading = 'よんじゅっぷん';
-                if (num === 50) reading = 'ごじゅっぷん';
-
-
-                return { q: displayNumKanji + '分', a: reading };
+                return { q: kanjiNumPart + '分', a: answerReading };
             }},
-            // --- 回 (かい) ---
+            // --- 回 (かい - times) ---
             { type: 'number_counter_generated', counterKanji: '回', range: [1, 20], generator: (num) => {
-                let reading = '';
-                const numStr = String(num);
-                const baseNumReading = standardNumberReadings[numStr] || numStr; // For single digits
-                let displayNumKanji = numberToKanji[numStr] || numStr;
-                let prefixReading = "";
-
-                if (num > 10) {
-                     const tens = Math.floor(num / 10);
-                     const ones = num % 10;
-                     prefixReading = (tens === 1 ? "じゅう" : standardNumberReadings[String(tens)] + "じゅう");
-                     if (ones === 0) displayNumKanji = (numberToKanji[String(tens)] || String(tens)) + "十";
-                     else displayNumKanji = (numberToKanji[String(tens)] || String(tens)) + "十" + (numberToKanji[String(ones)] || String(ones));
-                }
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                let answerReading = '';
+                if (num === 1 || (num > 10 && num % 10 === 1)) answerReading = readingNumPart.slice(0, -2) + 'いっかい'; // いち -> いっ
+                else if (num === 6 || (num > 10 && num % 10 === 6)) answerReading = readingNumPart.slice(0, -2) + 'ろっかい'; // ろく -> ろっ
+                else if (num === 8 || (num > 10 && num % 10 === 8)) answerReading = readingNumPart.slice(0, -2) + 'はっかい'; // はち -> はっ
+                else if (num === 10) answerReading = 'じっかい'; // or じゅっかい
+                else if (num > 10 && num % 10 === 0) answerReading = readingNumPart.slice(0,-3) + 'っかい'; // e.g. にじっかい (from にじゅう)
+                else answerReading = readingNumPart + 'かい';
+                if (num === 1) answerReading = 'いっかい'; // Override for standalone 1
+                 if (num === 10) answerReading = 'じっかい';
 
 
-                if (num === 1 || (num > 10 && num % 10 === 1)) reading = (num === 1 ? "" : prefixReading) + 'いっかい';
-                else if (num === 6 || (num > 10 && num % 10 === 6)) reading = (num === 6 ? "" : prefixReading) + 'ろっかい';
-                else if (num === 8 || (num > 10 && num % 10 === 8)) reading = (num === 8 ? "" : prefixReading) + 'はっかい';
-                else if (num % 10 === 0 ) reading = (num === 10 ? "じっ" : prefixReading.slice(0,-3) + "じっ") + 'かい'; // じっかい, にじっかい
-                else reading = (num > 10 ? prefixReading + (standardNumberReadings[String(num%10)] || String(num%10)) : baseNumReading) + 'かい';
-
-                if (num === 10) reading = 'じっかい'; // Common alt: じゅっかい
-
-                return { q: displayNumKanji + '回', a: reading };
+                return { q: kanjiNumPart + '回', a: answerReading };
             }},
-            // --- 冊 (さつ) ---
+            // --- 冊 (さつ - bound volumes) ---
             { type: 'number_counter_generated', counterKanji: '冊', range: [1, 20], generator: (num) => {
-                let reading = '';
-                const numStr = String(num);
-                const baseNumReading = standardNumberReadings[numStr] || numStr;
-                let displayNumKanji = numberToKanji[numStr] || numStr;
-                let prefixReading = "";
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                let answerReading = '';
+                if (num === 1 || (num > 10 && num % 10 === 1)) answerReading = readingNumPart.slice(0, -2) + 'いっさつ';
+                else if (num === 8 || (num > 10 && num % 10 === 8)) answerReading = readingNumPart.slice(0, -2) + 'はっさつ';
+                else if (num === 10) answerReading = 'じっさつ'; // or じゅっさつ
+                else if (num > 10 && num % 10 === 0) answerReading = readingNumPart.slice(0,-3) + 'っさつ'; // e.g. にじっさつ
+                else answerReading = readingNumPart + 'さつ';
+                if (num === 1) answerReading = 'いっさつ';
+                if (num === 10) answerReading = 'じっさつ';
 
-                 if (num > 10) {
-                     const tens = Math.floor(num / 10);
-                     const ones = num % 10;
-                     prefixReading = (tens === 1 ? "じゅう" : standardNumberReadings[String(tens)] + "じゅう");
-                     if (ones === 0) displayNumKanji = (numberToKanji[String(tens)] || String(tens)) + "十";
-                     else displayNumKanji = (numberToKanji[String(tens)] || String(tens)) + "十" + (numberToKanji[String(ones)] || String(ones));
-                }
-
-                if (num === 1 || (num > 10 && num % 10 === 1)) reading = (num === 1 ? "" : prefixReading) + 'いっさつ';
-                else if (num === 8 || (num > 10 && num % 10 === 8)) reading = (num === 8 ? "" : prefixReading) + 'はっさつ';
-                else if (num % 10 === 0) reading = (num === 10 ? "じっ" : prefixReading.slice(0,-3) + "じっ") + 'さつ'; // じっさつ, にじっさつ
-                else reading = (num > 10 ? prefixReading + (standardNumberReadings[String(num%10)] || String(num%10)) : baseNumReading) + 'さつ';
-
-                if (num === 10) reading = 'じっさつ'; // Common alt: じゅっさつ
-
-                return { q: displayNumKanji + '冊', a: reading };
+                return { q: kanjiNumPart + '冊', a: answerReading };
             }},
-            // --- 着 (ちゃく) ---
+            // --- 着 (ちゃく - clothing) ---
             { type: 'number_counter_generated', counterKanji: '着', range: [1, 10], generator: (num) => {
-                let reading = '';
-                const numStr = String(num);
-                const baseNumReading = standardNumberReadings[numStr] || numStr;
-                if (num === 1) reading = 'いっちゃく';
-                else if (num === 8) reading = 'はっちゃく';
-                else if (num === 10) reading = 'じっちゃく'; // 或 じゅっちゃく
-                else reading = baseNumReading + 'ちゃく';
-                return { q: (numberToKanji[numStr] || numStr) + '着', a: reading };
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                let answerReading = '';
+                if (num === 1) answerReading = 'いっちゃく';
+                else if (num === 8) answerReading = 'はっちゃく';
+                else if (num === 10) answerReading = 'じっちゃく'; // or じゅっちゃく
+                else answerReading = readingNumPart + 'ちゃく';
+                return { q: kanjiNumPart + '着', a: answerReading };
             }},
-            // --- 枚 (まい) ---
+            // --- 枚 (まい - flat objects) ---
             { type: 'number_counter_generated', counterKanji: '枚', range: [1, 20], generator: (num) => {
-                const numStr = String(num);
-                let kanjiPart = numberToKanji[numStr] || numStr;
-                let readingPart = "";
-
-                 if (num <= 9) {
-                    readingPart = standardNumberReadings[numStr] || numStr;
-                 } else if (num === 10) {
-                    readingPart = "じゅう";
-                 } else if (num > 10 && num <=20) { // 11-20
-                    const tens = Math.floor(num/10);
-                    const ones = num % 10;
-                    readingPart = (tens === 1 ? "じゅう" : standardNumberReadings[String(tens)]+"じゅう") + (standardNumberReadings[String(ones)] || "");
-                     if (num === 20) readingPart = "にじゅう";
-                 }
-                return { q: kanjiPart + '枚', a: readingPart + 'まい' };
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                return { q: kanjiNumPart + '枚', a: readingNumPart + 'まい' }; // まい is regular
+            }},
+            // --- 人 (にん/り - people) ---
+            { type: 'number_counter_generated', counterKanji: '人', range: [1, 10], generator: (num) => {
+                const { kanji: kanjiNumPart, reading: readingNumPart } = numToJapaneseSimple(num);
+                let answerReading = '';
+                if (num === 1) answerReading = 'ひとり';
+                else if (num === 2) answerReading = 'ふたり';
+                else if (num === 4) answerReading = 'よにん'; // Special reading for 4
+                else answerReading = readingNumPart + 'にん';
+                return { q: kanjiNumPart + '人', a: answerReading };
             }},
         ];
 
@@ -530,25 +456,27 @@
             const categoryIndex = getRandomInt(0, quizData.length - 1);
             const category = quizData[categoryIndex];
 
-            if (category.type === 'standalone_number' || category.type === 'number_counter') {
-                const itemIndex = getRandomInt(0, category.values.length - 1);
-                const item = category.values[itemIndex];
-                currentQuestionData = { q: item.q, a: item.a };
-                 if (category.type === 'number_counter') {
+            if (category.type === 'standalone_number' || category.type === 'number_counter_list') {
+                // For 'standalone_number', 'values' is the array; for 'number_counter_list', 'items' is the array.
+                const itemsArray = category.values || category.items;
+                const itemIndex = getRandomInt(0, itemsArray.length - 1);
+                const item = itemsArray[itemIndex];
+                currentQuestionData = { q: item.q, a: item.a, type: category.type }; // Store type for feedback if needed
+                 if (category.type === 'number_counter_list') {
                     currentQuestionData.q = item.numKanji + item.qSuffix;
                 }
-            } else if (category.type === 'number_counter_generated') {
-                const num = getRandomInt(category.range[0], category.range[1]);
-                currentQuestionData = category.generator(num);
-            } else if (category.type === 'complex_number') {
-                const num = getRandomInt(category.range[0], category.range[1]);
-                currentQuestionData = category.generator(num); // q, a, kanji_representation
+            } else if (category.type === 'number_counter_generated' || category.type === 'complex_number') {
+                // For complex_number, the generator doesn't take a num argument directly here, it uses its range.
+                // For number_counter_generated, it needs a random number from its range.
+                const numForGenerator = (category.type === 'complex_number') ? null : getRandomInt(category.range[0], category.range[1]);
+                currentQuestionData = category.generator(numForGenerator);
+                currentQuestionData.type = category.type; // Store type
             }
             questionArea.textContent = currentQuestionData.q;
         }
 
         function checkAnswer() {
-            const userAnswer = answerInput.value.trim().replace(/ゔ/g, 'う゛'); // Normalize ゔ to う゛ if needed for some IME inputs
+            const userAnswer = answerInput.value.trim().replace(/ゔ/g, 'う゛');
             if (!userAnswer) {
                 feedbackArea.textContent = '请输入答案！';
                 feedbackArea.className = 'incorrect';
@@ -557,7 +485,7 @@
 
             if (userAnswer === currentQuestionData.a) {
                 feedbackArea.textContent = '正确！ 🎉';
-                if (currentQuestionData.kanji_representation) {
+                if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
                     feedbackArea.textContent += ` (${currentQuestionData.kanji_representation})`;
                 }
                 feedbackArea.className = 'correct';
@@ -565,11 +493,8 @@
                 scoreDisplay.textContent = score;
             } else {
                 let correctAnswerText = `错误。正确答案是: ${currentQuestionData.a}`;
-                if (currentQuestionData.kanji_representation) {
+                if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
                     correctAnswerText += ` ( ${currentQuestionData.kanji_representation} )`;
-                } else if (currentQuestionData.type === 'standalone_number' || currentQuestionData.type === 'number_counter' || currentQuestionData.type === 'number_counter_generated') {
-                    // For other types, the question itself is often the Kanji form
-                    // correctAnswerText += ` ( ${currentQuestionData.q} )`; // This might be redundant if q is already Kanji
                 }
                 feedbackArea.textContent = correctAnswerText;
                 feedbackArea.className = 'incorrect';
