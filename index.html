@@ -21,12 +21,14 @@
 
         .top-controls {
             display: flex;
-            gap: 15px; /* Space between toggle buttons */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center; /* Center items when wrapped */
+            gap: 10px; /* Space between toggle buttons and mode selector */
             margin-bottom: 20px;
             align-items: center;
         }
 
-        .control-button { /* Common class for top control buttons */
+        .control-button, .mode-selector select { /* Common class for top control buttons and select */
             background-color: #8b5e3c;
             color: #f4f1ea;
             border: none;
@@ -36,13 +38,35 @@
             font-size: 0.9em;
             transition: background-color 0.3s ease, transform 0.1s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 38px; /* Match button height */
+            -webkit-appearance: none; /* Remove default select styling for Safari/Chrome */
+            -moz-appearance: none;    /* Remove default select styling for Firefox */
+            appearance: none;         /* Remove default select styling */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23f4f1ea%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+            padding-right: 30px; /* Make space for arrow */
         }
-        .control-button:hover {
+        .control-button:hover, .mode-selector select:hover {
             background-color: #7a5230;
         }
-        .control-button:active {
+        .control-button:active, .mode-selector select:active { /* :active might not be very visible on select */
             transform: translateY(1px);
         }
+
+        .mode-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mode-selector label {
+            font-size: 0.9em;
+            color: #4a4a4a;
+            font-weight: 500;
+        }
+
+
         #playSoundButton {
             background-color: #5a8b3c; /* A different color for play sound */
             margin-top: 10px; /* Spacing from feedback */
@@ -162,6 +186,19 @@
 
         /* 响应式设计 */
         @media (max-width: 600px) {
+            .top-controls {
+                flex-direction: column; /* Stack controls vertically on small screens */
+                gap: 10px;
+            }
+            .mode-selector {
+                width: 100%;
+                justify-content: center;
+            }
+            .mode-selector select {
+                width: auto; /* Allow select to size based on content */
+                flex-grow: 1; /* Allow select to take available space if needed */
+                max-width: 200px; /* Prevent it from becoming too wide */
+            }
             .quiz-container {
                 padding: 25px 20px;
             }
@@ -177,9 +214,12 @@
                 font-size: 1em;
                 padding: 12px 18px;
             }
-            .control-button, #playSoundButton {
-                font-size: 0.8em;
-                padding: 8px 15px;
+            .control-button, #playSoundButton, .mode-selector select {
+                font-size: 0.85em; /* Slightly larger for better touch */
+                padding: 10px 15px;
+            }
+             .mode-selector select {
+                padding-right: 30px; /* Ensure arrow space is maintained */
             }
         }
     </style>
@@ -188,6 +228,14 @@
     <div class="top-controls">
         <button id="languageToggle" class="control-button">切换语言 (Switch Language)</button>
         <button id="muteToggle" class="control-button">静音</button>
+        <div class="mode-selector">
+            <label for="quizModeSelect" id="uiQuizModeLabel">练习模式:</label>
+            <select id="quizModeSelect" class="control-button">
+                <option value="all" id="uiQuizModeAll">全部</option>
+                <option value="numbers" id="uiQuizModeNumbers">仅数字</option>
+                <option value="counters" id="uiQuizModeCounters">仅量词</option>
+            </select>
+        </div>
     </div>
 
     <div class="quiz-container">
@@ -220,7 +268,11 @@
                 pageTitle: '日语数字和量词练习',
                 mute: '静音',
                 unmute: '取消静音',
-                playSound: '播放声音'
+                playSound: '播放声音',
+                quizModeLabel: '练习模式:',
+                quizModeAll: '全部',
+                quizModeNumbers: '仅数字',
+                quizModeCounters: '仅量词'
             },
             en: {
                 htmlLang: 'en',
@@ -236,14 +288,19 @@
                 pageTitle: 'Japanese Quiz',
                 mute: 'Mute',
                 unmute: 'Unmute',
-                playSound: 'Play Sound'
+                playSound: 'Play Sound',
+                quizModeLabel: 'Practice Mode:',
+                quizModeAll: 'All',
+                quizModeNumbers: 'Numbers Only',
+                quizModeCounters: 'Counters Only'
             }
         };
         let currentLanguage = 'zh';
         let isMuted = false;
-        const synth = window.speechSynthesis; // Speech Synthesis API
+        const synth = window.speechSynthesis;
+        let currentQuizMode = 'all'; // 'all', 'numbers', 'counters'
 
-        // --- DOM Elements for UI Text & Controls ---
+        // --- DOM Elements ---
         const htmlElement = document.documentElement;
         const pageTitleElement = document.querySelector('title');
         const uiTitleElement = document.getElementById('uiTitle');
@@ -254,6 +311,11 @@
         const languageToggleButton = document.getElementById('languageToggle');
         const muteToggleButton = document.getElementById('muteToggle');
         const playSoundButton = document.getElementById('playSoundButton');
+        const quizModeSelectElement = document.getElementById('quizModeSelect');
+        const uiQuizModeLabelElement = document.getElementById('uiQuizModeLabel');
+        const uiQuizModeAllOption = document.getElementById('uiQuizModeAll');
+        const uiQuizModeNumbersOption = document.getElementById('uiQuizModeNumbers');
+        const uiQuizModeCountersOption = document.getElementById('uiQuizModeCounters');
 
 
         function updateUIText() {
@@ -268,87 +330,72 @@
             languageToggleButton.textContent = strings.toggleButton;
             muteToggleButton.textContent = isMuted ? strings.unmute : strings.mute;
             playSoundButton.textContent = strings.playSound;
+            uiQuizModeLabelElement.textContent = strings.quizModeLabel;
+            uiQuizModeAllOption.textContent = strings.quizModeAll;
+            uiQuizModeNumbersOption.textContent = strings.quizModeNumbers;
+            uiQuizModeCountersOption.textContent = strings.quizModeCounters;
         }
 
         function setInitialLanguage() {
             const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
-            if (browserLang.startsWith('en')) {
-                currentLanguage = 'en';
-            } else {
-                currentLanguage = 'zh';
-            }
+            currentLanguage = browserLang.startsWith('en') ? 'en' : 'zh';
             updateUIText();
         }
 
-        // --- Speech Synthesis Function ---
         function speak(textToSpeak) {
-            if (isMuted || !textToSpeak || !synth) {
-                return;
-            }
-            if (synth.speaking) { // If already speaking, cancel previous and speak new
-                synth.cancel();
-            }
+            if (isMuted || !textToSpeak || !synth) return;
+            if (synth.speaking) synth.cancel();
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
-            utterance.lang = 'ja-JP'; // Specify Japanese language
-            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.9;
             utterance.pitch = 1;
-
-            // Attempt to find a Japanese voice
             const voices = synth.getVoices();
             const japaneseVoice = voices.find(voice => voice.lang === 'ja-JP');
-            if (japaneseVoice) {
-                utterance.voice = japaneseVoice;
-            } else {
-                console.warn("No Japanese voice found, using default.");
-            }
+            if (japaneseVoice) utterance.voice = japaneseVoice;
+            else console.warn("No Japanese voice found, using default.");
             synth.speak(utterance);
         }
-        // Ensure voices are loaded (some browsers load them asynchronously)
         if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = () => {
-                // Voices loaded, could re-call speak if something was pending
-                // For this app, it's usually fine as speak is called on demand
-            };
+            synth.onvoiceschanged = () => {}; // Handler for voices loaded
         }
-
 
         languageToggleButton.addEventListener('click', () => {
             currentLanguage = (currentLanguage === 'zh') ? 'en' : 'zh';
             updateUIText();
             if (feedbackArea.textContent && currentQuestionData) {
-                const isCurrentlyCorrect = feedbackArea.classList.contains('correct');
-                const tempAnswer = currentQuestionData.a;
-                if (isCurrentlyCorrect) {
-                     feedbackArea.textContent = uiStrings[currentLanguage].correctFeedback;
+                const isCorrect = feedbackArea.classList.contains('correct');
+                const answer = currentQuestionData.a;
+                const strings = uiStrings[currentLanguage];
+                if (isCorrect) {
+                     feedbackArea.textContent = strings.correctFeedback;
                      if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
                         feedbackArea.textContent += ` (${currentQuestionData.kanji_representation})`;
                      }
                 } else {
-                    let correctAnswerText = `${uiStrings[currentLanguage].incorrectFeedbackPrefix}${tempAnswer}`;
+                    let text = `${strings.incorrectFeedbackPrefix}${answer}`;
                     if (currentQuestionData.type === 'complex_number' && currentQuestionData.kanji_representation) {
-                        correctAnswerText += ` ( ${currentQuestionData.kanji_representation} )`;
+                        text += ` ( ${currentQuestionData.kanji_representation} )`;
                     }
-                    feedbackArea.textContent = correctAnswerText;
+                    feedbackArea.textContent = text;
                 }
             }
         });
 
         muteToggleButton.addEventListener('click', () => {
             isMuted = !isMuted;
-            muteToggleButton.textContent = isMuted ? uiStrings[currentLanguage].unmute : uiStrings[currentLanguage].mute;
-            if (isMuted && synth.speaking) {
-                synth.cancel(); // Stop any current speech if muted
-            }
+            updateUIText(); // Update button text
+            if (isMuted && synth.speaking) synth.cancel();
         });
 
         playSoundButton.addEventListener('click', () => {
-            if (currentQuestionData && currentQuestionData.a) {
-                speak(currentQuestionData.a);
-            }
+            if (currentQuestionData && currentQuestionData.a) speak(currentQuestionData.a);
         });
 
+        quizModeSelectElement.addEventListener('change', (event) => {
+            currentQuizMode = event.target.value;
+            generateQuestion(); // Generate a new question based on the new mode
+        });
 
-        // --- Japanese Content Data (Unchanged) ---
         const singleDigitReadings = { '1': 'いち', '2': 'に', '3': 'さん', '4': 'よん', '5': 'ご', '6': 'ろく', '7': 'なな', '8': 'はち', '9': 'きゅう', '0': '' };
         const singleDigitKanji = { '0': '零', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九' };
 
@@ -397,7 +444,7 @@
             return { kanji: k, reading: r };
         }
 
-        const quizData = [
+        const allQuizData = [ // Renamed to allQuizData to avoid confusion
             { type: 'standalone_number', unit: '百', values: [ { num: 100, q: '百', a: 'ひゃく' }, { num: 200, q: '二百', a: 'にひゃく' }, { num: 300, q: '三百', a: 'さんびゃく' }, { num: 400, q: '四百', a: 'よんひゃく' }, { num: 500, q: '五百', a: 'ごひゃく' }, { num: 600, q: '六百', a: 'ろっぴゃく' }, { num: 700, q: '七百', a: 'ななひゃく' }, { num: 800, q: '八百', a: 'はっぴゃく' }, { num: 900, q: '九百', a: 'きゅうひゃく' } ]},
             { type: 'standalone_number', unit: '千', values: [ { num: 1000, q: '千', a: 'せん' }, { num: 2000, q: '二千', a: 'にせん' }, { num: 3000, q: '三千', a: 'さんぜん' }, { num: 4000, q: '四千', a: 'よんせん' }, { num: 5000, q: '五千', a: 'ごせん' }, { num: 6000, q: '六千', a: 'ろくせん' }, { num: 7000, q: '七千', a: 'ななせん' }, { num: 8000, q: '八千', a: 'はっせん' }, { num: 9000, q: '九千', a: 'きゅうせん' } ]},
             { type: 'complex_number', displayName: '复杂数字', range: [101, 99999], generator: function() { let num; do { num = getRandomInt(this.range[0], this.range[1]); } while ( (num < 1000 && num % 100 === 0) || (num < 10000 && num % 1000 === 0) ); const jp = numToJapanese(num); return { q: String(num), a: jp.reading, kanji_representation: jp.kanji }; } },
@@ -430,9 +477,22 @@
         function generateQuestion() {
             answerInput.value = ''; feedbackArea.textContent = ''; feedbackArea.className = '';
             answerInput.disabled = false; checkButton.disabled = false;
-            playSoundButton.disabled = true; // Disable play sound until answer is checked
+            playSoundButton.disabled = true;
 
-            const catIdx = getRandomInt(0, quizData.length - 1); const cat = quizData[catIdx];
+            let filteredData = allQuizData;
+            if (currentQuizMode === 'numbers') {
+                filteredData = allQuizData.filter(item => item.type === 'standalone_number' || item.type === 'complex_number');
+            } else if (currentQuizMode === 'counters') {
+                filteredData = allQuizData.filter(item => item.type === 'number_counter_list' || item.type === 'number_counter_generated');
+            }
+
+            if (filteredData.length === 0) { // Fallback if filter results in no data (should not happen with 'all')
+                console.warn("No data available for current quiz mode:", currentQuizMode, "Falling back to all data.");
+                filteredData = allQuizData;
+            }
+
+
+            const catIdx = getRandomInt(0, filteredData.length - 1); const cat = filteredData[catIdx];
 
             if (cat.type === 'standalone_number' || cat.type === 'number_counter_list') {
                 const items = cat.values || cat.items; const itemIdx = getRandomInt(0, items.length - 1);
@@ -469,7 +529,7 @@
                 feedbackArea.textContent = correctAnswerText; feedbackArea.className = 'incorrect';
             }
             answerInput.disabled = true; checkButton.disabled = true;
-            playSoundButton.disabled = false; // Enable play sound button
+            playSoundButton.disabled = false;
         }
 
         checkButton.addEventListener('click', checkAnswer);
