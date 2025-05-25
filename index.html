@@ -55,16 +55,11 @@
             transform: translateY(1px);
         }
 
-        .mode-selector {
+        .mode-selector { /* Container for the select dropdown */
             display: flex;
             align-items: center;
-            gap: 8px;
         }
-        .mode-selector label {
-            font-size: 0.9em;
-            color: #4a4a4a;
-            font-weight: 500;
-        }
+        /* Label was removed, so no style needed for it anymore */
 
 
         #playSoundButton {
@@ -229,11 +224,9 @@
         <button id="languageToggle" class="control-button">切换语言 (Switch Language)</button>
         <button id="muteToggle" class="control-button">静音</button>
         <div class="mode-selector">
-            <label for="quizModeSelect" id="uiQuizModeLabel">练习模式:</label>
             <select id="quizModeSelect" class="control-button">
                 <option value="all" id="uiQuizModeAll">全部</option>
-                <option value="numbers" id="uiQuizModeNumbers">仅数字</option>
-                <option value="counters" id="uiQuizModeCounters">仅量词</option>
+                <option value="numbers" id="uiQuizModeNumbers" selected>仅数字</option> <option value="counters" id="uiQuizModeCounters">仅量词</option>
             </select>
         </div>
     </div>
@@ -269,7 +262,7 @@
                 mute: '静音',
                 unmute: '取消静音',
                 playSound: '播放声音',
-                quizModeLabel: '练习模式:',
+                // quizModeLabel: '练习模式:', // Label text removed
                 quizModeAll: '全部',
                 quizModeNumbers: '仅数字',
                 quizModeCounters: '仅量词'
@@ -289,7 +282,7 @@
                 mute: 'Mute',
                 unmute: 'Unmute',
                 playSound: 'Play Sound',
-                quizModeLabel: 'Practice Mode:',
+                // quizModeLabel: 'Practice Mode:', // Label text removed
                 quizModeAll: 'All',
                 quizModeNumbers: 'Numbers Only',
                 quizModeCounters: 'Counters Only'
@@ -298,7 +291,7 @@
         let currentLanguage = 'zh';
         let isMuted = false;
         const synth = window.speechSynthesis;
-        let currentQuizMode = 'all'; // 'all', 'numbers', 'counters'
+        let currentQuizMode = 'numbers'; // Default to 'numbers'
 
         // --- DOM Elements ---
         const htmlElement = document.documentElement;
@@ -312,7 +305,7 @@
         const muteToggleButton = document.getElementById('muteToggle');
         const playSoundButton = document.getElementById('playSoundButton');
         const quizModeSelectElement = document.getElementById('quizModeSelect');
-        const uiQuizModeLabelElement = document.getElementById('uiQuizModeLabel');
+        // const uiQuizModeLabelElement = document.getElementById('uiQuizModeLabel'); // Label element removed
         const uiQuizModeAllOption = document.getElementById('uiQuizModeAll');
         const uiQuizModeNumbersOption = document.getElementById('uiQuizModeNumbers');
         const uiQuizModeCountersOption = document.getElementById('uiQuizModeCounters');
@@ -330,17 +323,24 @@
             languageToggleButton.textContent = strings.toggleButton;
             muteToggleButton.textContent = isMuted ? strings.unmute : strings.mute;
             playSoundButton.textContent = strings.playSound;
-            uiQuizModeLabelElement.textContent = strings.quizModeLabel;
+            // uiQuizModeLabelElement.textContent = strings.quizModeLabel; // Label text removed
             uiQuizModeAllOption.textContent = strings.quizModeAll;
             uiQuizModeNumbersOption.textContent = strings.quizModeNumbers;
             uiQuizModeCountersOption.textContent = strings.quizModeCounters;
         }
 
-        function setInitialLanguage() {
+        function initializeQuiz() {
             const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
             currentLanguage = browserLang.startsWith('en') ? 'en' : 'zh';
-            updateUIText();
+            
+            // Set default quiz mode from JS, then update select element
+            currentQuizMode = 'numbers'; 
+            quizModeSelectElement.value = currentQuizMode;
+
+            updateUIText(); // Update all UI text elements
+            generateQuestion(); // Generate the first question
         }
+
 
         function speak(textToSpeak) {
             if (isMuted || !textToSpeak || !synth) return;
@@ -486,9 +486,18 @@
                 filteredData = allQuizData.filter(item => item.type === 'number_counter_list' || item.type === 'number_counter_generated');
             }
 
-            if (filteredData.length === 0) { // Fallback if filter results in no data (should not happen with 'all')
+            if (filteredData.length === 0) { 
                 console.warn("No data available for current quiz mode:", currentQuizMode, "Falling back to all data.");
                 filteredData = allQuizData;
+                 // Optionally, inform the user or switch mode back to 'all'
+                if (allQuizData.length > 0) { // Ensure allQuizData is not empty itself
+                    currentQuizMode = 'all'; // Revert mode if filtered is empty
+                    quizModeSelectElement.value = 'all'; // Update dropdown
+                    updateUIText(); // Update any text related to mode if necessary
+                } else {
+                    questionArea.textContent = "No questions available."; // Or localized string
+                    return; // No data to generate a question from
+                }
             }
 
 
@@ -541,8 +550,8 @@
             }
         });
 
-        setInitialLanguage();
-        generateQuestion();
+        // --- Initial Load ---
+        initializeQuiz(); // Consolidate initialization
     </script>
 </body>
 </html>
