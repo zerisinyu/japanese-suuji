@@ -8,22 +8,24 @@
         :root {
             --primary-color: #4A90E2; /* A modern blue */
             --secondary-color: #50E3C2; /* A vibrant teal/mint */
-            --background-color: #f7f9fc; /* Light, clean background */
+            --accent-color: #F5A623; /* An accent orange for highlights */
+            --background-color: #f8f9fa; /* Even lighter background */
             --card-background-color: #ffffff;
-            --text-color: #333333;
-            --text-light-color: #555555;
-            --border-color: #e0e0e0;
-            --success-color: #4CAF50; /* Green for correct answers */
-            --error-color: #F44336;   /* Red for incorrect answers */
+            --text-color: #212529; /* Darker text for better contrast */
+            --text-light-color: #495057;
+            --border-color: #dee2e6;
+            --success-color: #28a745; 
+            --error-color: #dc3545;   
             --button-text-color: #ffffff;
             --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            --input-focus-shadow: rgba(74, 144, 226, 0.25);
         }
 
         body {
             font-family: var(--font-family);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; 
             align-items: center;
             min-height: 100vh;
             background-color: var(--background-color);
@@ -33,174 +35,223 @@
             color: var(--text-color);
         }
 
+        .top-controls-container {
+            width: 100%;
+            max-width: 600px; 
+            margin-bottom: 25px;
+        }
+
         .top-controls {
             display: flex;
             flex-wrap: wrap; 
             justify-content: center; 
-            gap: 12px;
-            margin-bottom: 25px;
+            gap: 10px; 
             align-items: center;
+            padding: 10px;
+            background-color: var(--card-background-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
         }
 
         .control-button, .mode-selector select {
             background-color: var(--card-background-color);
             color: var(--primary-color);
             border: 1px solid var(--border-color);
-            padding: 10px 18px;
-            border-radius: 20px; 
+            padding: 8px 15px; 
+            border-radius: 18px; 
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.85em; 
             font-weight: 500;
             transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            height: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: 36px; 
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
+            flex-grow: 1; 
+            flex-basis: auto; 
+            display: inline-flex; /* Added for better centering with text-align */
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+            text-align: center; 
         }
+
         .mode-selector select {
              background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234A90E2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 10px;
-            padding-right: 35px;
+            background-position: right 10px center;
+            background-size: 9px; 
+            padding-right: 30px; /* Make space for arrow */
+            padding-left: 15px; /* Ensure text isn't cramped */
+            text-align-last: center; /* For select specifically */
         }
+         /* Firefox specific for select text centering */
+        @-moz-document url-prefix() {
+            .mode-selector select {
+                text-align-last: center;
+            }
+        }
+
 
         .control-button:hover, .mode-selector select:hover {
             background-color: var(--primary-color);
             color: var(--button-text-color);
             border-color: var(--primary-color);
-            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2);
+            box-shadow: 0 3px 8px rgba(74, 144, 226, 0.2);
         }
          .control-button:hover.mode-selector select, .mode-selector select:hover { 
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
         }
         .control-button:active {
             transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         #muteToggle.muted, #listeningModeToggle.active {
             background-color: var(--secondary-color);
-            color: var(--button-text-color);
+            color: var(--button-text-color); 
             border-color: var(--secondary-color);
         }
+         #muteToggle.muted:hover, #listeningModeToggle.active:hover {
+            background-color: #45D1B5; 
+        }
 
-        .mode-selector { display: flex; align-items: center; }
+
+        .mode-selector { display: flex; align-items: center; flex-grow: 1; flex-basis: auto; } 
 
         #playSoundButton {
-            background-color: var(--secondary-color);
+            background-color: var(--accent-color); 
             color: var(--button-text-color);
             border: none; margin-top: 15px; padding: 12px 20px;
             font-size: 1em; font-weight: 500; border-radius: 20px;
+            display: inline-flex; /* For centering content */
+            align-items: center;
+            justify-content: center;
         }
         #playSoundButton:disabled {
             background-color: #e0e0e0; color: #9e9e9e;
             cursor: not-allowed; box-shadow: none;
         }
          #playSoundButton:hover:not(:disabled) {
-            background-color: #45D1B5; 
-            box-shadow: 0 4px 10px rgba(80, 227, 194, 0.2);
+            background-color: #F39C12; 
+            box-shadow: 0 4px 10px rgba(245, 166, 35, 0.2);
         }
 
         .quiz-container {
             background-color: var(--card-background-color);
-            padding: 40px; border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px 35px; border-radius: 16px; 
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); 
             width: 100%; max-width: 600px; text-align: center;
         }
 
         h1 {
-            color: var(--text-color); margin-bottom: 35px;
-            font-size: 2.2em; font-weight: 600;
+            color: var(--text-color); margin-bottom: 30px;
+            font-size: 2em; font-weight: 700; 
         }
 
         #questionArea {
-            font-size: 3em; color: var(--primary-color); margin-bottom: 35px;
-            padding: 25px; background-color: #edf6ff; 
-            border-radius: 12px; min-height: 80px;
+            font-size: 2.8em; color: var(--primary-color); margin-bottom: 30px;
+            padding: 20px; background-color: #e9f2ff; 
+            border-radius: 12px; min-height: 75px;
             display: flex; justify-content: center; align-items: center;
             font-weight: 700; line-height: 1.3;
         }
         #questionArea.listening-prompt {
-            font-size: 1.6em; color: var(--secondary-color);
-            background-color: #e6fffa; 
+            font-size: 1.5em; color: var(--secondary-color);
+            background-color: #e0f8f2; 
         }
 
         #answerInput {
-            width: calc(100% - 30px); padding: 16px; margin-bottom: 30px;
-            border: 1px solid var(--border-color); border-radius: 10px;
-            font-size: 1.25em; box-sizing: border-box; color: var(--text-color);
+            width: calc(100% - 24px); padding: 15px; margin-bottom: 25px; 
+            border: 1px solid var(--border-color); border-radius: 8px; 
+            font-size: 1.2em; box-sizing: border-box; color: var(--text-color);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         #answerInput:focus {
             outline: none; border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+            box-shadow: 0 0 0 3px var(--input-focus-shadow);
         }
-        #answerInput::placeholder { color: #a0aec0; }
+        #answerInput::placeholder { color: #adb5bd; } 
 
-        .buttons-group { display: flex; justify-content: center; gap: 20px; }
+        .buttons-group { display: flex; justify-content: center; gap: 15px; } 
 
         button.quiz-button {
             color: var(--button-text-color); border: none;
-            padding: 15px 25px; border-radius: 25px; 
-            cursor: pointer; font-size: 1.15em; font-weight: 600;
+            padding: 14px 22px; border-radius: 22px; 
+            cursor: pointer; font-size: 1.1em; font-weight: 600;
             transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            min-width: 140px; 
+            min-width: 130px; 
         }
         button.quiz-button:hover {
-             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-             transform: translateY(-2px);
+             box-shadow: 0 5px 10px rgba(0,0,0,0.12);
+             transform: translateY(-1px);
         }
         button.quiz-button:active {
             transform: translateY(0px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         #checkButton { background-color: var(--success-color); }
-        #checkButton:hover { background-color: #45a049; }
+        #checkButton:hover { background-color: #218838; } 
         #nextButton { background-color: var(--primary-color); }
         #nextButton:hover { background-color: #3A7BC8; }
 
-        #feedbackArea { margin-top: 30px; font-size: 1.2em; min-height: 40px; font-weight: 600; }
+        #feedbackArea { margin-top: 25px; font-size: 1.15em; min-height: 38px; font-weight: 600; }
         .correct { color: var(--success-color); }
         .incorrect { color: var(--error-color); }
-        #scoreArea { margin-top: 35px; font-size: 1.3em; color: var(--text-light-color); font-weight: 500; }
+        #scoreArea { margin-top: 30px; font-size: 1.25em; color: var(--text-light-color); font-weight: 500; }
 
-        @media (max-width: 600px) {
-            .top-controls { gap: 10px; }
-            .control-button, .mode-selector select { flex-shrink: 1; }
-            .mode-selector select { width: auto; max-width: 220px; }
-            .quiz-container { padding: 30px 20px; }
-            h1 { font-size: 1.8em; }
-            #questionArea { font-size: 2.5em; padding: 20px; min-height: 70px; }
-            #questionArea.listening-prompt { font-size: 1.4em; }
-            #answerInput, button.quiz-button { font-size: 1.05em; padding: 14px 20px; }
-            .control-button, #playSoundButton, .mode-selector select { font-size: 0.9em; padding: 10px 15px; height: 38px;}
-            .mode-selector select { padding-right: 30px; }
-            button.quiz-button { min-width: 120px; }
+        @media (max-width: 768px) { 
+            .control-button, .mode-selector, .mode-selector select {
+                flex-basis: calc(50% - 6px); 
+                min-width: 140px; /* Adjusted min-width */
+            }
+        }
+
+        @media (max-width: 480px) { 
+            .top-controls { gap: 8px; }
+            .control-button, .mode-selector select {
+                font-size: 0.8em; padding: 8px 12px; height: 34px;
+                flex-basis: calc(50% - 4px); /* Try for 2 per row even on small screens */
+                min-width: 120px; /* Further reduce min-width */
+            }
+            .mode-selector { flex-basis: calc(50% - 4px); } /* Ensure div also takes 50% */
+            .mode-selector select { width: 100%; padding-right: 25px; background-size: 8px; }
+
+            .quiz-container { padding: 25px 15px; }
+            h1 { font-size: 1.6em; margin-bottom: 25px; }
+            #questionArea { font-size: 2.2em; padding: 15px; min-height: 65px; margin-bottom: 25px;}
+            #questionArea.listening-prompt { font-size: 1.3em; }
+            #answerInput { font-size: 1.1em; padding: 12px; margin-bottom: 20px;}
+            button.quiz-button { font-size: 1em; padding: 12px 18px; min-width: 100px; }
+            .buttons-group { gap: 10px; }
+            #feedbackArea { font-size: 1.1em; margin-top: 20px; }
+            #scoreArea { font-size: 1.15em; margin-top: 25px; }
+            #playSoundButton { font-size: 0.9em; padding: 10px 15px; }
         }
     </style>
 </head>
 <body>
-    <div class="top-controls">
-        <button id="languageToggle" class="control-button">切换语言</button>
-        <button id="muteToggle" class="control-button">静音</button>
-        <div class="mode-selector">
-            <select id="quizModeSelect" class="control-button">
-                <option value="all" id="uiQuizModeAll">全部</option>
-                <option value="numbers_only" id="uiQuizModeNumbersOnly" selected>仅数字</option>
-                <option value="counters_datetime" id="uiQuizModeCountersDateTime">日期与时间</option>
-                <option value="counters_objects" id="uiQuizModeCountersObjects">物品量词</option>
-                <option value="counters_living" id="uiQuizModeCountersLiving">人与动物</option>
-            </select>
+    <div class="top-controls-container">
+        <div class="top-controls">
+            <button id="languageToggle" class="control-button">切换语言</button>
+            <button id="muteToggle" class="control-button">静音</button>
+            <div class="mode-selector">
+                <select id="quizModeSelect" class="control-button">
+                    <option value="all" id="uiQuizModeAll">全部</option>
+                    <option value="numbers_only" id="uiQuizModeNumbersOnly" selected>仅数字</option>
+                    <option value="counters_datetime" id="uiQuizModeCountersDateTime">日期与时间</option>
+                    <option value="counters_objects" id="uiQuizModeCountersObjects">物品量词</option>
+                    <option value="counters_living" id="uiQuizModeCountersLiving">人与动物</option>
+                </select>
+            </div>
+            <button id="listeningModeToggle" class="control-button">听写模式</button>
         </div>
-        <button id="listeningModeToggle" class="control-button">听写模式</button>
     </div>
 
     <div class="quiz-container">
         <h1 id="uiTitle">日语数字和量词练习</h1>
         <div id="questionArea"></div>
-        <input type="text" id="answerInput" placeholder="请输入读音 (平假名)">
+        <input type="text" id="answerInput" placeholder="请输入读音 (平假名/Romaji)">
         <div class="buttons-group">
             <button id="checkButton" class="quiz-button">检查答案</button>
             <button id="nextButton" class="quiz-button">下一个</button>
@@ -213,24 +264,24 @@
     <script>
         const uiStrings = {
             zh: {
-                htmlLang: 'zh-CN', title: '日语数字和量词练习', checkAnswer: '检查答案', nextQuestion: '下一个',
-                scoreLabel: '分数', placeholderDefault: '请输入读音 (平假名)', placeholderListening: '请写入听到的内容',
-                correctFeedback: '正确！ 🎉', incorrectFeedbackPrefix: '错误。正确答案是: ', inputPrompt: '请输入答案！',
-                toggleButton: '切换至 English', pageTitle: '日语数字和量词练习', mute: '静音', unmute: '取消静音',
-                playSound: '播放声音', 
-                quizModeAll: '全部', quizModeNumbersOnly: '仅数字', quizModeCountersDateTime: '日期与时间',
-                quizModeCountersObjects: '物品量词', quizModeCountersLiving: '人与动物',
+                htmlLang: 'zh-CN', title: '日语练习', checkAnswer: '检查', nextQuestion: '下一个',
+                scoreLabel: '得分', placeholderDefault: '输入读音 (平假名/Romaji)', placeholderListening: '请写入听到的内容',
+                correctFeedback: '正确! 🎉', incorrectFeedbackPrefix: '错误。正确: ', inputPrompt: '请输入答案！',
+                toggleButton: 'English', pageTitle: '日语练习', mute: '静音', unmute: '取消静音',
+                playSound: '播放', 
+                quizModeAll: '全部', quizModeNumbersOnly: '数字', quizModeCountersDateTime: '日期/时间',
+                quizModeCountersObjects: '物品', quizModeCountersLiving: '人/动物',
                 listeningModeOn: '视觉模式', listeningModeOff: '听写模式',
                 listeningPrompt: '请听声音...'
             },
             en: {
-                htmlLang: 'en', title: 'Japanese Numbers & Counters Quiz', checkAnswer: 'Check Answer', nextQuestion: 'Next',
-                scoreLabel: 'Score', placeholderDefault: 'Enter reading (Hiragana)', placeholderListening: 'Write what you hear',
-                correctFeedback: 'Correct! �', incorrectFeedbackPrefix: 'Incorrect. The correct answer is: ', inputPrompt: 'Please enter an answer!',
-                toggleButton: '切换至 中文', pageTitle: 'Japanese Quiz', mute: 'Mute', unmute: 'Unmute',
-                playSound: 'Play Sound', 
-                quizModeAll: 'All', quizModeNumbersOnly: 'Numbers Only', quizModeCountersDateTime: 'Dates & Time',
-                quizModeCountersObjects: 'Objects (Counters)', quizModeCountersLiving: 'People & Animals',
+                htmlLang: 'en', title: 'Japanese Quiz', checkAnswer: 'Check', nextQuestion: 'Next',
+                scoreLabel: 'Score', placeholderDefault: 'Enter reading (Hiragana/Romaji)', placeholderListening: 'Write what you hear',
+                correctFeedback: 'Correct! 🎉', incorrectFeedbackPrefix: 'Incorrect. Correct: ', inputPrompt: 'Please enter an answer!',
+                toggleButton: '中文', pageTitle: 'Japanese Quiz', mute: 'Mute', unmute: 'Unmute',
+                playSound: 'Play', 
+                quizModeAll: 'All', quizModeNumbersOnly: 'Numbers', quizModeCountersDateTime: 'Dates/Time',
+                quizModeCountersObjects: 'Objects', quizModeCountersLiving: 'People/Animals',
                 listeningModeOn: 'Visual Mode', listeningModeOff: 'Listening Mode',
                 listeningPrompt: 'Listen to the audio...'
             }
@@ -238,8 +289,116 @@
         let currentLanguage = 'zh';
         let isMuted = false;
         const synth = window.speechSynthesis;
-        let currentQuizMode = 'numbers_only'; // Default to numbers_only
+        let currentQuizMode = 'numbers_only'; 
         let isListeningMode = false;
+
+        // --- Romaji Conversion (Basic with sokuon and some long vowels) ---
+        const romajiMonographs = {
+            あ:'a', い:'i', う:'u', え:'e', お:'o',
+            か:'ka', き:'ki', く:'ku', け:'ke', こ:'ko',
+            さ:'sa', し:'shi', す:'su', せ:'se', そ:'so',
+            た:'ta', ち:'chi', つ:'tsu', て:'te', と:'to',
+            な:'na', に:'ni', ぬ:'nu', ね:'ne', の:'no',
+            は:'ha', ひ:'hi', ふ:'fu', へ:'he', ほ:'ho',
+            ま:'ma', み:'mi', む:'mu', め:'me', も:'mo',
+            や:'ya', ゆ:'yu', よ:'yo',
+            ら:'ra', り:'ri', る:'ru', れ:'re', ろ:'ro',
+            わ:'wa', を:'o', ん:'n', // を as 'o' is common for particles, 'wo' for others. For simplicity, 'o'.
+            が:'ga', ぎ:'gi', ぐ:'gu', げ:'ge', ご:'go',
+            ざ:'za', じ:'ji', ず:'zu', ぜ:'ze', ぞ:'zo',
+            だ:'da', ぢ:'ji', づ:'zu', で:'de', ど:'do', // ぢ/づ often ji/zu
+            ば:'ba', び:'bi', ぶ:'bu', べ:'be', ぼ:'bo',
+            ぱ:'pa', ぴ:'pi', ぷ:'pu', ぺ:'pe', ぽ:'po'
+        };
+        const romajiDigraphs = {
+            きゃ:'kya', きゅ:'kyu', きょ:'kyo',
+            しゃ:'sha', しゅ:'shu', しょ:'sho',
+            ちゃ:'cha', ちゅ:'chu', ちょ:'cho',
+            にゃ:'nya', にゅ:'nyu', にょ:'nyo',
+            ひゃ:'hya', ひゅ:'hyu', ひょ:'hyo',
+            みゃ:'mya', みゅ:'myu', みょ:'myo',
+            りゃ:'rya', りゅ:'ryu', りょ:'ryo',
+            ぎゃ:'gya', ぎゅ:'gyu', ぎょ:'gyo',
+            じゃ:'ja', じゅ:'ju', じょ:'jo', // じ + ゃ/ゅ/ょ
+            ぢゃ:'ja', ぢゅ:'ju', ぢょ:'jo', // Alternative for じ
+            びゃ:'bya', びゅ:'byu', びょ:'byo',
+            ぴゃ:'pya', ぴゅ:'pyu', ぴょ:'pyo'
+        };
+        // For long vowels, a more robust system would be complex. This is simplified.
+        const longVowelMap = { 'う': ':', 'お': ':' , 'あ':':', 'い':':', 'え':':'}; // Using colon as a placeholder for macron
+
+        function hiraganaToRomaji(text) {
+            if (!text) return "";
+            let romaji = "";
+            let i = 0;
+            while (i < text.length) {
+                let consumed = false;
+                // Check for 2-character digraphs
+                if (i + 1 < text.length) {
+                    const twoChar = text.substring(i, i + 2);
+                    if (romajiDigraphs[twoChar]) {
+                        romaji += romajiDigraphs[twoChar];
+                        i += 2;
+                        consumed = true;
+                    }
+                }
+                // Check for 1-character monographs if not consumed by digraph
+                if (!consumed) {
+                    const oneChar = text.charAt(i);
+                    if (oneChar === 'っ') { // Sokuon
+                        if (i + 1 < text.length) {
+                            const nextChar = text.charAt(i + 1);
+                            let nextRomajiInitial = "";
+                            if (i + 2 < text.length && romajiDigraphs[text.substring(i+1, i+3)]) {
+                                nextRomajiInitial = romajiDigraphs[text.substring(i+1, i+3)].charAt(0);
+                            } else if (romajiMonographs[nextChar]) {
+                                nextRomajiInitial = romajiMonographs[nextChar].charAt(0);
+                            }
+                            // Double consonants like t, k, s, p. Avoid doubling n, m, y, w, h or vowels.
+                            if (nextRomajiInitial && "tkspc".includes(nextRomajiInitial)) { // c for chi/cha
+                                romaji += nextRomajiInitial;
+                            } else if (nextRomajiInitial === 'j' && nextChar === 'じ') { // Special for じ
+                                romaji += 'j';
+                            }
+                            // No else needed, sokuon before vowels or n/m/y/w/h is rare or handled by context later
+                        }
+                        // Small tsu itself doesn't add to romaji here, it modifies the next.
+                        i++; 
+                        consumed = true; // Mark as consumed to skip monograph check for 'っ'
+                    } else if (romajiMonographs[oneChar]) {
+                        romaji += romajiMonographs[oneChar];
+                        // Basic long vowel check: if current char is お or え and next is う or い respectively
+                        if ((oneChar === 'お' && i + 1 < text.length && text.charAt(i + 1) === 'う') ||
+                            (oneChar === 'え' && i + 1 < text.length && text.charAt(i + 1) === 'い')) {
+                            // This combination (お+う -> ō, え+い -> ē) is common
+                            // The current romajiMonographs already maps お to 'o' and え to 'e'.
+                            // We can add a macron or double the vowel. For simplicity, let's use macron-like representation.
+                            // This is a very simplified approach.
+                            romaji = romaji.slice(0, -1) + (oneChar === 'お' ? 'ō' : 'ē');
+                            i++; // Consume the う or い
+                        }
+                        i++;
+                        consumed = true;
+                    }
+                }
+                if (!consumed) { // If character is not in maps (e.g., punctuation, Kanji)
+                    romaji += text.charAt(i);
+                    i++;
+                }
+            }
+            // Further simplify/normalize common long vowel representations
+            romaji = romaji.replace(/ou/g, "ō").replace(/oo/g, "ō");
+            romaji = romaji.replace(/uu/g, "ū");
+            romaji = romaji.replace(/aa/g, "ā");
+            romaji = romaji.replace(/ei/g, "ē").replace(/ee/g, "ē");
+            romaji = romaji.replace(/ii/g, "ī");
+            
+            // Special 'n' handling before b, m, p
+            romaji = romaji.replace(/n([bmp])/g, 'm$1');
+
+            return romaji;
+        }
+
 
         const htmlElement = document.documentElement;
         const pageTitleElement = document.querySelector('title');
@@ -319,10 +478,8 @@
         languageToggleButton.addEventListener('click', () => {
             currentLanguage = (currentLanguage === 'zh') ? 'en' : 'zh';
             updateUIText();
-            // Simplified feedback re-render logic
             if (feedbackArea.textContent && currentQuestionData) {
                 const isCorrect = feedbackArea.classList.contains('correct');
-                // Just re-trigger checkAnswer's display logic without re-validating
                 displayFeedback(isCorrect, currentQuestionData);
             }
         });
@@ -396,7 +553,6 @@
             return { kanji: k, reading: r };
         }
         
-        // Helper to get a specific counter's data for complex time combinations
         function getCounterItem(counterKanji, num) {
             const category = allQuizData.find(cat => cat.counterKanji === counterKanji && cat.type === 'number_counter_list');
             if (category) {
@@ -405,7 +561,7 @@
             }
             const genCategory = allQuizData.find(cat => cat.counterKanji === counterKanji && cat.type === 'number_counter_generated');
             if (genCategory) {
-                return genCategory.generator(num); // This returns {q, a, original_number}
+                return genCategory.generator(num); 
             }
             return null;
         }
@@ -435,91 +591,51 @@
             { type: 'number_counter_generated', categoryTag: 'living', counterKanji: '匹', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 1) a = 'いっぴき'; else if (num === 3) a = 'さんびき'; else if (num === 6) a = 'ろっぴき'; else if (num === 8) a = 'はっぴき'; else if (num === 10) a = 'じゅっぴき'; else a = r + 'ひき'; return { q: k + '匹', a: a, original_number: num }; }},
             { type: 'number_counter_generated', categoryTag: 'living', counterKanji: '羽', range: [1, 10], generator: (num) => { const { kanji: k, reading: r } = numToJapaneseSimple(num); let a = ''; if (num === 3) a = 'さんば'; else if (num === 6) a = 'ろっぱ'; else if (num === 8) a = 'はっぱ'; else if (num === 10) a = 'じゅっぱ'; else a = r + 'わ'; return { q: k + '羽', a: a, original_number: num }; }},
             
-            // New: Complex Date/Time Combinations
             { type: 'complex_datetime_combination', categoryTag: 'datetime', generator: function() {
-                let qKanji = '';
-                let aHiragana = '';
-                const components = []; // To store {q, a} of each part
-
-                // Randomly decide how many components (2 or 3)
+                let qKanji = ''; let aHiragana = ''; const components = []; 
                 const numComponents = getRandomInt(2, 3); 
                 const availableParts = ['month', 'day', 'hour', 'minute'];
                 const chosenParts = [];
-
-                // Shuffle and pick parts to ensure variety and avoid fixed order
                 for (let i = availableParts.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [availableParts[i], availableParts[j]] = [availableParts[j], availableParts[i]];
                 }
-                for(let i=0; i < numComponents; i++) {
-                    chosenParts.push(availableParts[i]);
-                }
-                // Ensure a somewhat logical order for display (e.g., month before day, day before hour)
-                chosenParts.sort((p1, p2) => availableParts.indexOf(p1) - availableParts.indexOf(p2));
-
+                for(let i=0; i < numComponents; i++) { chosenParts.push(availableParts[i]); }
+                chosenParts.sort((p1, p2) => ['month', 'day', 'hour', 'minute'].indexOf(p1) - ['month', 'day', 'hour', 'minute'].indexOf(p2));
 
                 if (chosenParts.includes('month')) {
-                    const monthNum = getRandomInt(1, 12);
-                    const monthData = getCounterItem('月', monthNum);
+                    const monthData = getCounterItem('月', getRandomInt(1, 12));
                     if (monthData) components.push({ q: monthData.q, a: monthData.a });
                 }
                 if (chosenParts.includes('day')) {
-                    // For days, pick from the existing list to get irregulars easily
                     const dayList = allQuizData.find(d => d.counterKanji === '日').items;
                     const randomDayItem = dayList[getRandomInt(0, dayList.length - 1)];
                     components.push({ q: randomDayItem.numKanji + randomDayItem.qSuffix, a: randomDayItem.a });
                 }
                 if (chosenParts.includes('hour')) {
-                    const hourNum = getRandomInt(1, 12);
-                    const hourData = getCounterItem('時', hourNum);
+                    const hourData = getCounterItem('時', getRandomInt(1, 12));
                     if (hourData) components.push({ q: hourData.q, a: hourData.a });
                 }
-                if (chosenParts.includes('minute') && components.length < 3) { // Add minute if we still have space for components
-                    let minuteNum;
-                    // Make minutes more interesting: 0, 5, 10, 15, ... 55, or random
-                    const type = getRandomInt(1,3);
-                    if (type === 1) minuteNum = getRandomInt(0,11) * 5; // 0, 5, ..., 55
-                    else minuteNum = getRandomInt(1, 59); // any minute
-                    if (minuteNum === 0 && components.length > 0) { // Avoid "0 minutes" unless it's the only time component (which it won't be here)
-                        // Skip adding minute if it's 0 and other components exist
-                    } else if (minuteNum > 0) {
+                if (chosenParts.includes('minute') && components.length < 3) { 
+                    let minuteNum = (getRandomInt(1,2) === 1) ? getRandomInt(0,11) * 5 : getRandomInt(1, 59);
+                    if (minuteNum === 0 && components.length > 0) {} 
+                    else if (minuteNum > 0) {
                         const minuteData = getCounterItem('分', minuteNum);
                         if (minuteData) components.push({ q: minuteData.q, a: minuteData.a });
                     }
                 }
-                
-                // If by chance we only got 1 component (e.g. minute was 0 and skipped), try to add one more simple one
-                if (components.length < 2) {
-                     if (!chosenParts.includes('hour')) {
-                        const hourNum = getRandomInt(1, 12);
-                        const hourData = getCounterItem('時', hourNum);
-                        if (hourData) components.push({ q: hourData.q, a: hourData.a });
-                     } else if (!chosenParts.includes('day') && components.length < 2) {
-                        const dayList = allQuizData.find(d => d.counterKanji === '日').items;
-                        const randomDayItem = dayList[getRandomInt(0, dayList.length - 1)];
-                        components.push({ q: randomDayItem.numKanji + randomDayItem.qSuffix, a: randomDayItem.a });
-                     }
+                if (components.length < 2) { /* Add fallback component if needed */ }
+                qKanji = components.map(c => c.q).join(''); aHiragana = components.map(c => c.a).join('');
+                if (!qKanji) { /* Fallback if qKanji is still empty */
+                    const hourData = getCounterItem('時', getRandomInt(1,12)); const minuteData = getCounterItem('分', getRandomInt(1,59));
+                    qKanji = hourData.q + minuteData.q; aHiragana = hourData.a + minuteData.a;
                 }
-
-
-                qKanji = components.map(c => c.q).join('');
-                aHiragana = components.map(c => c.a).join('');
-
-                // Fallback if somehow qKanji is empty
-                if (!qKanji) {
-                    const hourData = getCounterItem('時', getRandomInt(1,12));
-                    const minuteData = getCounterItem('分', getRandomInt(1,59));
-                    qKanji = hourData.q + minuteData.q;
-                    aHiragana = hourData.a + minuteData.a;
-                }
-
-                return { q: qKanji, a: aHiragana, original_number: null }; // original_number is not applicable here
+                return { q: qKanji, a: aHiragana, original_number: null, type: 'complex_datetime_combination' }; 
             }}
         ];
 
         const feedbackArea = document.getElementById('feedbackArea');
         const scoreDisplay = document.getElementById('score');
-
         let currentQuestionData = null;
         let score = 0;
 
@@ -544,16 +660,14 @@
             } else if (currentQuizMode === 'counters_living') {
                 eligibleCategories = allQuizData.filter(item => item.categoryTag === 'living');
             }
-            // 'all' mode uses allQuizData
 
             if (eligibleCategories.length === 0) {
-                console.warn("No data available for current quiz mode:", currentQuizMode, "Falling back to all data.");
-                eligibleCategories = allQuizData; // Fallback
-                if (allQuizData.length > 0 && currentQuizMode !== 'all') { // Avoid infinite loop if allQuizData is empty
-                    currentQuizMode = 'all';
-                    quizModeSelectElement.value = 'all';
+                console.warn("No data for mode:", currentQuizMode, "Fallback to all.");
+                eligibleCategories = allQuizData; 
+                if (allQuizData.length > 0 && currentQuizMode !== 'all') { 
+                    currentQuizMode = 'all'; quizModeSelectElement.value = 'all';
                 } else if (allQuizData.length === 0) {
-                    questionArea.textContent = currentLanguage === 'zh' ? "没有可用的问题。" : "No questions available.";
+                    questionArea.textContent = uiStrings[currentLanguage].listeningPrompt.includes("没有") ? "没有可用的问题。" : "No questions available.";
                     return;
                 }
             }
@@ -561,29 +675,22 @@
 
             const catIdx = getRandomInt(0, eligibleCategories.length - 1);
             const category = eligibleCategories[catIdx];
-
+            
             if (category.type === 'standalone_number' || category.type === 'number_counter_list') {
                 const items = category.values || category.items;
                 const itemIdx = getRandomInt(0, items.length - 1);
                 currentQuestionData = { ...items[itemIdx], type: category.type, categoryTag: category.categoryTag };
                 if (category.type === 'number_counter_list') {
                     currentQuestionData.q = items[itemIdx].numKanji + (items[itemIdx].qSuffix !== undefined ? items[itemIdx].qSuffix : category.counterKanji);
-                     if (category.counterKanji === 'つ' && items[itemIdx].num === 10) {
-                         currentQuestionData.q = items[itemIdx].numKanji;
-                     } else if (category.counterKanji === 'つ') {
-                         currentQuestionData.q = items[itemIdx].numKanji + "つ";
-                     }
+                     if (category.counterKanji === 'つ' && items[itemIdx].num === 10) currentQuestionData.q = items[itemIdx].numKanji;
+                     else if (category.counterKanji === 'つ') currentQuestionData.q = items[itemIdx].numKanji + "つ";
                 }
-                if (category.type === 'standalone_number' || category.type === 'number_counter_list') { // Add original_number for these too
-                    currentQuestionData.original_number = items[itemIdx].num;
-                }
+                currentQuestionData.original_number = items[itemIdx].num; 
             } else if (category.type === 'number_counter_generated' || category.type === 'complex_number' || category.type === 'complex_datetime_combination') {
                 const numGen = (category.type === 'complex_number' || category.type === 'complex_datetime_combination') ? null : getRandomInt(category.range[0], category.range[1]);
-                currentQuestionData = category.generator(numGen);
-                currentQuestionData.type = category.type;
-                currentQuestionData.categoryTag = category.categoryTag;
+                currentQuestionData = category.generator(numGen); 
+                if (!currentQuestionData.categoryTag) currentQuestionData.categoryTag = category.categoryTag; 
             }
-
 
             if (isListeningMode) {
                 questionArea.textContent = uiStrings[currentLanguage].listeningPrompt;
@@ -606,14 +713,10 @@
         function displayFeedback(isCorrectFlag, data) {
             const strings = uiStrings[currentLanguage];
             if (isCorrectFlag) {
-                feedbackArea.textContent = strings.correctFeedback;
-                if (data.type === 'complex_number') {
-                    feedbackArea.textContent += ` (${data.kanji_representation} / ${data.a})`;
-                } else if (data.type === 'standalone_number') {
-                     feedbackArea.textContent += ` (${data.q} / ${data.a})`;
-                } else if (data.type === 'number_counter_list' || data.type === 'number_counter_generated' || data.type === 'complex_datetime_combination') {
-                     feedbackArea.textContent += ` (${data.q} / ${data.a})`;
-                }
+                feedbackArea.textContent = strings.correctFeedback; // Emoji 🎉 is part of this string
+                if (data.type === 'complex_number') feedbackArea.textContent += ` (${data.kanji_representation} / ${data.a})`;
+                else if (data.type === 'standalone_number') feedbackArea.textContent += ` (${data.q} / ${data.a})`;
+                else if (data.type === 'number_counter_list' || data.type === 'number_counter_generated' || data.type === 'complex_datetime_combination') feedbackArea.textContent += ` (${data.q} / ${data.a})`;
                 feedbackArea.className = 'correct';
             } else {
                 let correctAnswerDisplay = data.a;
@@ -621,51 +724,49 @@
                     if (data.type === 'standalone_number' || data.type === 'complex_number') {
                         const writtenForm = data.type === 'standalone_number' ? data.q : data.kanji_representation;
                         correctAnswerDisplay = `${writtenForm} (${data.a})`;
-                    } else { // Counters & Complex Datetime
+                    } else { 
                         correctAnswerDisplay = `${data.q} (${data.a})`;
                     }
-                } else { // Visual mode
+                } else { 
                      correctAnswerDisplay = data.a;
-                     if (data.kanji_representation && data.kanji_representation !== data.q && data.type === 'complex_number') {
-                         correctAnswerDisplay += ` (${data.kanji_representation})`;
-                     } else if (data.type !== 'complex_number' && data.type !== 'complex_datetime_combination' && data.q !== data.a) {
-                         correctAnswerDisplay += ` (${data.q})`;
-                     } else if (data.type === 'complex_datetime_combination') {
-                         correctAnswerDisplay += ` (${data.q})` // Show Kanji for complex time
-                     }
+                     if (data.kanji_representation && data.kanji_representation !== data.q && data.type === 'complex_number') correctAnswerDisplay += ` (${data.kanji_representation})`;
+                     else if (data.type !== 'complex_number' && data.type !== 'complex_datetime_combination' && data.q !== data.a) correctAnswerDisplay += ` (${data.q})`;
+                     else if (data.type === 'complex_datetime_combination') correctAnswerDisplay += ` (${data.q})`
                 }
                 feedbackArea.textContent = `${strings.incorrectFeedbackPrefix}${correctAnswerDisplay}`;
                 feedbackArea.className = 'incorrect';
             }
         }
 
-
         function checkAnswer() {
-            const userAnswer = answerInputElement.value.trim().replace(/ゔ/g, 'う゛');
-            const strings = uiStrings[currentLanguage];
+            const userAnswerRaw = answerInputElement.value.trim();
+            const userAnswer = userAnswerRaw.toLowerCase().replace(/ゔ/g, 'う゛'); 
+            const hiraganaAnswer = currentQuestionData.a;
+            // Normalize Romaji: remove macrons for comparison, handle common variations
+            const normalizeRomaji = (r) => r.replace(/[ōūāēī]/g, (match) => ({'ō':'ou', 'ū':'uu', 'ā':'aa', 'ē':'ei', 'ī':'ii'}[match] || match))
+                                          .replace(/n([bmp])/g, 'm$1'); // n before b/m/p -> m
+            
+            const romajiAnswerTarget = normalizeRomaji(hiraganaToRomaji(hiraganaAnswer).toLowerCase());
+            const userAnswerNormalizedRomaji = normalizeRomaji(userAnswer);
 
-            if (!userAnswer) {
-                feedbackArea.textContent = strings.inputPrompt; feedbackArea.className = 'incorrect';
-                return;
-            }
 
             let isCorrect = false;
             if (isListeningMode) {
                 if (currentQuestionData.type === 'standalone_number' || currentQuestionData.type === 'complex_number') {
                     const arabicAnswer = String(currentQuestionData.original_number);
-                    const kanjiAnswer = currentQuestionData.type === 'standalone_number' ? currentQuestionData.q : currentQuestionData.kanji_representation;
-                    isCorrect = userAnswer === arabicAnswer || userAnswer === kanjiAnswer;
+                    const kanjiAnswer = (currentQuestionData.type === 'standalone_number' ? currentQuestionData.q : currentQuestionData.kanji_representation).toLowerCase();
+                    isCorrect = userAnswer === arabicAnswer || userAnswer === kanjiAnswer || userAnswerNormalizedRomaji === romajiAnswerTarget;
                 } else { // Counters and Complex Datetime
-                    isCorrect = userAnswer === currentQuestionData.q;
+                    isCorrect = userAnswer === currentQuestionData.q.toLowerCase() || userAnswerNormalizedRomaji === romajiAnswerTarget;
                 }
-            } else { // Visual mode
-                isCorrect = userAnswer === currentQuestionData.a;
+            } else { // Visual mode (expecting Hiragana or Romaji that converts to the Hiragana)
+                isCorrect = userAnswer === hiraganaAnswer || userAnswerNormalizedRomaji === romajiAnswerTarget;
             }
 
             if (isCorrect) {
                 score++; scoreDisplay.textContent = score;
             }
-            displayFeedback(isCorrect, currentQuestionData); // Use the new displayFeedback function
+            displayFeedback(isCorrect, currentQuestionData); 
 
             answerInputElement.disabled = true; checkButtonElement.disabled = true;
             playSoundButton.disabled = false;
